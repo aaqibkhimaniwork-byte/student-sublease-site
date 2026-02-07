@@ -10,6 +10,8 @@ export default function Listings() {
   const [expandedId, setExpandedId] = useState(null);
   const navigate = useNavigate();
   const [uniSearch, setUniSearch] = useState("");
+  const [universities, setUniversities] = useState([]); // list of unis for autocomplete
+  const [showSuggestions, setShowSuggestions] = useState(false); // control dropdown
 
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
@@ -62,6 +64,40 @@ export default function Listings() {
     setLoading(false);
   }
 
+  useEffect(() => {
+  async function fetchListings() {
+    setLoading(true);
+
+    const query = filters.university
+      ? `?university=${encodeURIComponent(filters.university)}`
+      : "";
+
+    const res = await fetch(`http://localhost:5000/api/listings${query}`);
+    const data = await res.json();
+
+    setDbListings(data);
+    setLoading(false);
+  }
+
+  fetchListings();
+}, [filters.university]);
+
+
+  useEffect(() => {
+  async function fetchUniversities() {
+    try {
+      const res = await fetch("http://localhost:5000/api/universities");
+      const data = await res.json();
+      setUniversities(data.map(u => u.name)); // store only names
+    } catch (err) {
+      console.error("Failed to load universities:", err);
+    }
+  }
+
+  fetchUniversities();
+}, []);
+
+
   // Toggle Favorite logic
   const toggleFavorite = async (e, listingId) => {
     e.stopPropagation();
@@ -113,21 +149,53 @@ export default function Listings() {
       <div style={filterPanelStyle}>
         <div style={filterColumnStyle}>
           <h4>Search Area</h4>
-          <input
-            placeholder="University"
-            value={uniSearch}
-            onChange={(e) => setUniSearch(e.target.value)}
-            style={inputStyle}
-          />
-          <button
+<div style={{ position: "relative" }}>
+  <input
+    placeholder="University"
+    value={uniSearch}
+    onChange={(e) => {
+      setUniSearch(e.target.value);
+      setShowSuggestions(true);
+    }}
+    onFocus={() => setShowSuggestions(true)}
+    onBlur={() => setTimeout(() => setShowSuggestions(false), 200)} // allow click
+    style={inputStyle}
+  />
+  
+  {showSuggestions && uniSearch && (
+    <ul style={{
+      position: "absolute", top: "35px", left: 0, right: 0,
+      background: "#fff", border: "1px solid #ddd", maxHeight: "150px",
+      overflowY: "auto", borderRadius: "4px", zIndex: 10, padding: 0, margin: 0
+    }}>
+      {universities
+        .filter(u => u.toLowerCase().includes(uniSearch.toLowerCase()))
+        .map((u, index) => (
+          <li
+            key={index}
             onClick={() => {
-              setFilters({ ...filters, university: uniSearch });
+              setUniSearch(u);
+              setFilters({ ...filters, university: u });
               setCurrentPage(1);
+              setShowSuggestions(false);
             }}
-            style={{ marginTop: "5px" }}
+            style={{ padding: "8px", cursor: "pointer" }}
           >
-            Search
-          </button>
+            {u}
+          </li>
+      ))}
+    </ul>
+  )}
+</div>
+<button
+  onClick={() => {
+    setFilters({ ...filters, university: uniSearch }); // trigger backend fetch
+    setCurrentPage(1);
+  }}
+  style={{ marginTop: "5px" }}
+>
+  Search
+</button>
           <input placeholder="City" onChange={(e) => {setFilters({...filters, city: e.target.value}); setCurrentPage(1);}} style={inputStyle} />
         </div>
         <div style={filterColumnStyle}>
