@@ -45,6 +45,44 @@ export default function PublicListing() {
     }
   }
 
+  // --- NEW: MESSAGING INTEGRATION ---
+  async function handleContactOwner() {
+    if (!user) {
+      alert("Please log in to message the owner.");
+      navigate("/login");
+      return;
+    }
+
+    if (user.id === listing.user_id) {
+      alert("This is your own listing!");
+      return;
+    }
+
+    // Generate the consistent conversation ID (alphabetical sort of IDs)
+    const conversationId = [user.id, listing.user_id].sort().join("--");
+
+    // Check if a message already exists in this thread
+    const { data: existing } = await supabase
+      .from("messages")
+      .select("id")
+      .eq("conversation_id", conversationId)
+      .limit(1);
+
+    // If no messages exist yet, send an automatic "I'm interested" message
+    if (!existing || existing.length === 0) {
+      await supabase.from("messages").insert([{
+        conversation_id: conversationId,
+        sender_id: user.id,
+        receiver_id: listing.user_id,
+        listing_id: listing.id,
+        content: `Hi ${listing.profiles?.firstname}! I'm interested in your listing: ${listing.title}.`
+      }]);
+    }
+
+    // Redirect to the messaging page
+    navigate("/messages");
+  }
+
   const toggleSave = async () => {
     if (!user) return alert("Please log in to save listings.");
     if (isSaved) {
@@ -109,11 +147,12 @@ export default function PublicListing() {
         <div style={sidebar}>
           <div style={priceCard}>
             <h2 style={{ color: "#0984e3", marginBottom: "15px" }}>${listing.rent}<span style={{ fontSize: "1rem", fontWeight: "normal", color: "#666" }}>/mo</span></h2>
+            {/* UPDATED BUTTON ROUTING */}
             <button 
-              onClick={() => window.location.href = `mailto:${listing.profiles?.email}?subject=Interested in ${listing.title}`}
+              onClick={handleContactOwner}
               style={contactBtn}
             >
-              Contact {listing.profiles?.firstname}
+              Message {listing.profiles?.firstname}
             </button>
           </div>
 
