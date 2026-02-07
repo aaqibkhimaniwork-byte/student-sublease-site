@@ -1,6 +1,9 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../supabaseClient";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import home from "../assets/House Icon.webp";
+import "../styles/SplashPage.css";
+import "../styles/MyProfile.css";
 
 export default function MyProfile() {
   const [profile, setProfile] = useState(null);
@@ -230,22 +233,59 @@ export default function MyProfile() {
     }));
   }
 
-  if (loading)
+  function renderHeader() {
     return (
-      <div style={{ padding: "100px", textAlign: "center" }}>
-        Loading profile...
+      <header className="splash-header">
+        <div className="header-content">
+          <div className="title-wrap">
+            <Link to="/" className="logo-link">
+              <img src={home} alt="House Icon" className="title-icon" />
+              <h1 className="app-title">Easy Lease</h1>
+            </Link>
+          </div>
+          <nav className="main-nav" aria-label="primary">
+            <ul>
+              <li><Link to="/listings">Listings</Link></li>
+              <li><Link to="/create">Create a Listing</Link></li>
+              <li><Link to="/messages">Messages</Link></li>
+            </ul>
+          </nav>
+          <div className="auth-wrap">
+            <Link to="/myprofile" className="contact-button">
+              My Profile
+            </Link>
+          </div>
+        </div>
+      </header>
+    );
+  }
+
+  function renderShell(content) {
+    return (
+      <div className="splash-outer profile-page">
+        <div className="splash-inner">
+          {renderHeader()}
+          <main className="splash-main">
+            <section className="profile-shell">
+              <div className="profile-content">
+                {content}
+              </div>
+            </section>
+          </main>
+        </div>
       </div>
     );
+  }
+
+  if (loading) {
+    return renderShell(
+      <div className="profile-empty">Loading profile...</div>
+    );
+  }
 
   if (!profile) {
-    return (
-      <div
-        style={{
-          padding: "100px",
-          textAlign: "center",
-          fontFamily: "sans-serif",
-        }}
-      >
+    return renderShell(
+      <div className="profile-empty">
         <h2 style={{ marginBottom: "10px" }}>Access Denied</h2>
         <p style={{ color: "#666", marginBottom: "30px" }}>
           You must be logged in to view your profile.
@@ -257,15 +297,8 @@ export default function MyProfile() {
     );
   }
 
-  return (
-    <div
-      style={{
-        padding: "40px",
-        maxWidth: "1000px",
-        margin: "0 auto",
-        fontFamily: "sans-serif",
-      }}
-    >
+  return renderShell(
+    <>
       {/* PERSONAL DETAILS */}
       <section style={sectionStyle}>
         <h2 style={{ marginBottom: "20px" }}>Personal Details</h2>
@@ -674,7 +707,7 @@ export default function MyProfile() {
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 }
 
