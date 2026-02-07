@@ -1,10 +1,13 @@
-import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
+import { useState } from "react";
+import { BrowserRouter, Routes, Route, Link, useLocation } from "react-router-dom";
 
+import SplashPage from "./pages/SplashPage";
+import CreateListing from "./pages/CreateListing";
+import Listings from "./pages/Listings";
 import Signup from "./pages/Signup";
 import Login from "./pages/Login";
 import Home from "./pages/Home";
 import Messages from "./pages/Messages";
-import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 
 export default function App() {
   const [listings, setListings] = useState([
@@ -19,16 +22,7 @@ export default function App() {
 
   return (
     <BrowserRouter>
-      {/* Simple Navbar */}
-      <nav style={{ padding: "15px", background: "#eee" }}>
-        <Link to="/" style={{ marginRight: "15px" }}>Signup</Link>
-        <Link to="/login" style={{ marginRight: "15px" }}>Login</Link>
-        <Link to="/home" style={{ marginRight: "15px" }}>Home</Link>
-        <Link to="/create" style={{ marginRight: "15px" }}>Create Listing</Link>
-        <Link to="/listings">Listings</Link>
-        <Link to="/messages" style={{ marginLeft: "15px" }}>Messages</Link>
-      </nav>
->>>>>>> 7b2d89ec7f57defe07c22afcf8febce33f90ac35
+      <TopBarIfNotSplash />
 
       <Routes>
         <Route path="/" element={<SplashPage />} />
@@ -51,8 +45,10 @@ function TopBarIfNotSplash() {
     <nav style={{ padding: "15px", background: "#eee" }}>
       <Link to="/signup" style={{ marginRight: "15px" }}>Signup</Link>
       <Link to="/login" style={{ marginRight: "15px" }}>Login</Link>
-      <Link to="/home" style={{ marginRight: "15px" }}>Listings</Link>
-      <Link to="/create">Post Listing</Link>
+      <Link to="/home" style={{ marginRight: "15px" }}>Home</Link>
+      <Link to="/create" style={{ marginRight: "15px" }}>Create Listing</Link>
+      <Link to="/listings" style={{ marginRight: "15px" }}>Listings</Link>
+      <Link to="/messages">Messages</Link>
     </nav>
   );
 }
