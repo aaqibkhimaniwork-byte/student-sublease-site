@@ -1,69 +1,90 @@
-.splash-outer {
-  background: #222;
-  min-height: 100vh;
-  padding: 12px;
+/* Login.css - Scoped to avoid breaking Homepage */
+
+#login-scope {
+  position: relative;
+  overflow: hidden;
+  background-color: #1a2744; /* Match your splash-outer theme */
 }
 
-.splash-inner {
-  background: #fff;
-  min-height: calc(100vh - 24px);
+/* Background Glow Shapes */
+#login-scope .login-shape {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  z-index: 0;
+  opacity: 0.6;
 }
 
-.splash-header {
-  background-color: #e8e8e8;
-  padding: 12px 20px;
+#login-scope .shape-1 {
+  width: 400px;
+  height: 400px;
+  background: #4565ff;
+  top: -100px;
+  left: -100px;
 }
 
-.header-content {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  max-width: 1200px;
+#login-scope .shape-2 {
+  width: 500px;
+  height: 500px;
+  background: #3d58e6;
+  bottom: -150px;
+  right: -50px;
+}
+
+/* Ensure content stays on top of shapes */
+#login-scope .splash-outer {
+  position: relative;
+  z-index: 1;
+  background: transparent !important;
+}
+
+#login-scope .splash-inner {
+  background: rgba(26, 39, 68, 0.8) !important; /* Semi-transparent dark blue */
+  backdrop-filter: blur(10px);
+}
+
+/* Centering Layout Overrides */
+#login-scope .hero-section {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center;
+  max-width: 500px;
   margin: 0 auto;
 }
 
-.app-title {
-  font-size: 34px;
-  font-weight: 500;
-  color: #111;
-  margin: 0;
+#login-scope .hero-content {
+  width: 100%;
 }
 
-.main-nav ul {
+#login-scope .hero-title {
+  font-size: 48px;
+}
+
+/* Form Styling */
+#login-scope .login-form-stack {
   display: flex;
-  gap: 28px;
-  list-style: none;
-  margin: 0;
-  padding: 0;
+  flex-direction: column;
+  gap: 20px;
 }
 
-.main-nav li {
-  font-size: 18px;
-  color: #111;
+#login-scope .search-container {
+  width: 100%;
+  padding: 40px;
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4);
 }
 
-.auth-wrap {
+#login-scope .search-input-group label {
+  text-align: left;
 }
 
-.login-button {
-  padding: 8px 20px;
-  background-color: #dcdcdc;
-  border: 2px solid #000;
-  border-radius: 24px;
-  font-size: 16px;
-  font-weight: 500;
-  color: #000;
-  text-decoration: none;
-  cursor: pointer;
-  transition: all 0.15s ease;
+#login-scope .search-button {
+  width: 100%;
+  margin-top: 10px;
 }
 
-.login-button:hover {
-  background-color: #cfcfcf;
-}
-
-.splash-main {
-  min-height: calc(100vh - 72px);
-  background-color: #fff;
-  padding: 40px 20px;
+#login-scope .login-msg {
+  margin-top: 20px;
+  color: #fff;
 }
