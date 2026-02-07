@@ -1,9 +1,29 @@
-/* Login.css - Scoped to avoid breaking Homepage */
+/* ===============================
+   Login.css - Scoped Styles
+   =============================== */
 
+/* Remove default browser margins that create the white bar */
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #1a2744; /* match splash theme */
+}
+
+/* Scope container */
 #login-scope {
   position: relative;
   overflow: hidden;
   background-color: #1a2744; /* Match your splash-outer theme */
+  min-height: 100vh; /* ensures full screen height */
+  width: 100%;
+}
+
+/* Hide any unwanted header/nav inside login page */
+#login-scope header,
+#login-scope nav {
+  display: none !important;
 }
 
 /* Background Glow Shapes */
@@ -36,11 +56,23 @@
   position: relative;
   z-index: 1;
   background: transparent !important;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
+/* Frosted glass effect */
 #login-scope .splash-inner {
-  background: rgba(26, 39, 68, 0.8) !important; /* Semi-transparent dark blue */
+  background: rgba(26, 39, 68, 0.8) !important;
   backdrop-filter: blur(10px);
+  padding: 40px;
+  border-radius: 20px;
+}
+
+/* Hide splash header on login page */
+#login-scope .splash-header {
+  display: none;
 }
 
 /* Centering Layout Overrides */
@@ -69,22 +101,45 @@
   gap: 20px;
 }
 
+/* Card container for form */
 #login-scope .search-container {
   width: 100%;
-  padding: 40px;
+  padding: 56px 48px;
+  max-width: 520px;
   box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4);
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
 }
 
+/* Align labels to left */
 #login-scope .search-input-group label {
   text-align: left;
+  color: white;
 }
 
+/* Full-width login button */
 #login-scope .search-button {
   width: 100%;
   margin-top: 10px;
 }
 
+/* Login message text */
 #login-scope .login-msg {
   margin-top: 20px;
   color: #fff;
+  text-align: center;
+}
+
+/* Make inputs look clean */
+#login-scope input {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: none;
+  outline: none;
+}
+
+/* Smooth box model */
+* {
+  box-sizing: border-box;
 }

@@ -25,7 +25,6 @@ export default function App() {
 
   return (
     <BrowserRouter>
-      <TopBarIfNotSplash />
 
       <Routes>
         <Route path="/" element={<SplashPage />} />
@@ -43,19 +42,4 @@ export default function App() {
   );
 }
 
-function TopBarIfNotSplash() {
-  const location = useLocation();
-  if (location.pathname === "/") return null;
 
-  return (
-    <nav style={{ padding: "15px", background: "#eee" }}>
-      <Link to="/signup" style={{ marginRight: "15px" }}>Signup</Link>
-      <Link to="/login" style={{ marginRight: "15px" }}>Login</Link>
-      <Link to="/" style={{ marginRight: "15px" }}>Home</Link>
-      <Link to="/create" style={{ marginRight: "15px" }}>Create Listing</Link>
-      <Link to="/listings" style={{ marginRight: "15px" }}>Listings</Link>
-      <Link to="/myprofile" style={{ marginRight: "15px" }}>My Profile</Link>
-      <Link to="/messages">Messages</Link>
-    </nav>
-  );
-}

@@ -22,9 +22,9 @@ export default function SplashPage() {
 
             <nav className="main-nav" aria-label="primary">
               <ul>
-                <li><Link to="/">Listings</Link></li>
-                <li><Link to="/">Create a Listing</Link></li>
-                <li><Link to="/">Messages</Link></li>
+                <li><Link to="/listings">Listings</Link></li>
+                <li><Link to="/create">Create a Listing</Link></li>
+                <li><Link to="/messages">Messages</Link></li>
               </ul>
             </nav>
 
