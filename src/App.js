@@ -9,6 +9,8 @@ import Login from "./pages/Login";
 import Home from "./pages/Home";
 import Messages from "./pages/Messages";
 import MyProfile from "./pages/MyProfile";
+import PublicProfile from "./pages/PublicProfile";
+import PublicListing from "./pages/PublicListing";
 
 export default function App() {
   const [listings, setListings] = useState([
@@ -34,6 +36,8 @@ export default function App() {
         <Route path="/listings" element={<Listings listings={listings} />} />
         <Route path="/messages" element={<Messages />} />
         <Route path="/myprofile" element={<MyProfile />} />
+        <Route path="/profile/:id" element={<PublicProfile />} />
+        <Route path="/listing/:id" element={<PublicListing />} />
       </Routes>
     </BrowserRouter>
   );

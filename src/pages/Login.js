@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { supabase } from "../supabaseClient"; 
 import { useNavigate, Link } from "react-router-dom";
 
@@ -7,29 +7,40 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  const [session, setSession] = useState(null); 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
 
   async function handleLogin(e) {
     e.preventDefault();
     setLoading(true);
     setMessage("");
 
-    const { data, error } = await supabase.auth.signInWithPassword({
+    const { error } = await supabase.auth.signInWithPassword({
       email: email,
       password: password,
     });
 
     if (error) {
-      setMessage(`❌ ${error.message}`);
+      setMessage(`Error: ${error.message}`);
     } else {
-      setMessage("✅ Login successful!");
-      // Redirecting to dashboard
-      setTimeout(() => navigate("/dashboard"), 1000);
+      setMessage("Login successful!");
+      setTimeout(() => navigate("/home"), 1000);
     }
     setLoading(false);
   }
 
-  // Exact same style object from your Signup page
   const inputStyle = { 
     padding: "10px", 
     width: "300px", 
@@ -37,8 +48,53 @@ export default function Login() {
     marginBottom: "10px" 
   };
 
+  // --- UI FOR LOGGED IN USERS ---
+  if (session) {
+    return (
+      <div style={{ padding: "50px", textAlign: "center", fontFamily: "sans-serif" }}>
+        <h2 style={{ color: "#2d3436" }}>You are already logged in</h2>
+        <p style={{ color: "#636e72" }}>Welcome back, <strong>{session.user.email}</strong></p>
+        
+        <div style={{ marginTop: "30px", display: "flex", justifyContent: "center", gap: "15px" }}>
+          <button 
+            onClick={() => navigate("/listings")}
+            style={{ 
+              padding: "12px 24px", 
+              cursor: "pointer", 
+              background: "#0984e3", 
+              color: "white", 
+              border: "none", 
+              borderRadius: "8px",
+              fontWeight: "bold",
+              fontSize: "14px"
+            }}
+          >
+            Look at Listings
+          </button>
+          
+          <button 
+            onClick={async () => { await supabase.auth.signOut(); setSession(null); }}
+            style={{ 
+              padding: "12px 24px", 
+              cursor: "pointer", 
+              background: "transparent", 
+              color: "#d63031", 
+              border: "2px solid #d63031", 
+              borderRadius: "8px",
+              fontWeight: "bold",
+              fontSize: "14px"
+            }}
+          >
+            Log Out
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // --- STANDARD LOGIN UI ---
   return (
-    <div style={{ padding: "30px" }}>
+    <div style={{ padding: "30px", fontFamily: "sans-serif" }}>
       <h2>Student Login</h2>
       <p>Log in to your account to manage subleases.</p>
 
@@ -67,20 +123,29 @@ export default function Login() {
             padding: "10px", 
             width: "324px", 
             cursor: "pointer",
-            backgroundColor: loading ? "#ccc" : "#007bff",
+            backgroundColor: loading ? "#ccc" : "#0984e3",
             color: "white",
             border: "none",
-            borderRadius: "4px"
+            borderRadius: "4px",
+            fontWeight: "bold"
           }}
         >
           {loading ? "Logging in..." : "Log In"}
         </button>
       </form>
 
-      {message && <p style={{ marginTop: "15px" }}>{message}</p>}
+      {message && (
+        <p style={{ 
+          marginTop: "15px", 
+          color: message.startsWith("Error") ? "#d63031" : "#00b894",
+          fontWeight: "500"
+        }}>
+          {message}
+        </p>
+      )}
       
-      <p style={{ marginTop: "15px", fontSize: "14px" }}>
-        Don't have an account? <Link to="/signup">Sign up here</Link>
+      <p style={{ marginTop: "20px", fontSize: "14px", color: "#636e72" }}>
+        Don't have an account? <Link to="/signup" style={{ color: "#0984e3", fontWeight: "bold", textDecoration: "none" }}>Sign up here</Link>
       </p>
     </div>
   );
