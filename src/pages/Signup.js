@@ -1,19 +1,25 @@
-import React, { useState } from "react";
-import { supabase } from "../supabaseClient";
+import { useState } from "react";
+import { supabase } from "../supabaseClient"; 
 
-const Signup = () => {
+export default function Signup() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [firstname, setFirstname] = useState("");
   const [lastname, setLastname] = useState("");
   const [university, setUniversity] = useState("");
-  const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleSignup = async (e) => {
+  async function handleSignup(e) {
     e.preventDefault();
     setLoading(true);
     setMessage("");
+
+    if (!email.endsWith(".edu")) {
+      setMessage("❌ Please use a valid .edu email address.");
+      setLoading(false);
+      return;
+    }
 
     const { data, error } = await supabase.auth.signUp({
       email: email,
@@ -23,33 +29,80 @@ const Signup = () => {
           firstname: firstname,
           lastname: lastname,
           university: university,
-          // Notice: profilepic_url is GONE from here
         },
       },
     });
 
     if (error) {
-      setMessage(`❌ Error: ${error.message}`);
+      setMessage(`❌ ${error.message}`);
     } else {
-      setMessage("✅ Success! Account created.");
+      setMessage("✅ Success! Check your email for a link.");
     }
     setLoading(false);
+  }
+
+  // This ensures they stay vertical
+  const inputStyle = { 
+    padding: "10px", 
+    width: "300px", 
+    display: "block", 
+    marginBottom: "10px" 
   };
 
   return (
-    <div className="signup-container" style={{ padding: "40px", maxWidth: "400px", margin: "0 auto" }}>
-      <h2>Join Student Sublease</h2>
-      <form onSubmit={handleSignup} style={{ display: "flex", flexDirection: "column", gap: "15px" }}>
-        <input type="text" placeholder="First Name" required value={firstname} onChange={(e) => setFirstname(e.target.value)} />
-        <input type="text" placeholder="Last Name" required value={lastname} onChange={(e) => setLastname(e.target.value)} />
-        <input type="text" placeholder="University" required value={university} onChange={(e) => setUniversity(e.target.value)} />
-        <input type="email" placeholder="Email" required value={email} onChange={(e) => setEmail(e.target.value)} />
-        <input type="password" placeholder="Password" required value={password} onChange={(e) => setPassword(e.target.value)} />
-        <button type="submit" disabled={loading}>{loading ? "Creating Account..." : "Sign Up"}</button>
+    <div style={{ padding: "30px" }}>
+      <h2>Student Signup</h2>
+      <p>Only verified college students can join.</p>
+
+      <form onSubmit={handleSignup}>
+        <input
+          placeholder="First Name"
+          value={firstname}
+          onChange={(e) => setFirstname(e.target.value)}
+          required
+          style={inputStyle}
+        />
+        <input
+          placeholder="Last Name"
+          value={lastname}
+          onChange={(e) => setLastname(e.target.value)}
+          required
+          style={inputStyle}
+        />
+        <input
+          placeholder="University (e.g. UGA)"
+          value={university}
+          onChange={(e) => setUniversity(e.target.value)}
+          required
+          style={inputStyle}
+        />
+        <input
+          type="email"
+          placeholder="Email (.edu)"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+          style={inputStyle}
+        />
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+          style={inputStyle}
+        />
+
+        <button 
+          type="submit" 
+          disabled={loading} 
+          style={{ padding: "10px", width: "324px", cursor: "pointer" }}
+        >
+          {loading ? "Registering..." : "Sign Up"}
+        </button>
       </form>
-      {message && <p style={{ color: message.includes("❌") ? "red" : "green" }}>{message}</p>}
+
+      {message && <p style={{ marginTop: "15px" }}>{message}</p>}
     </div>
   );
-};
-
-export default Signup;
+}
