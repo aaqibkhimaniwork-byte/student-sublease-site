@@ -76,7 +76,7 @@
 
 .create-form button.create-primary,
 .create-primary {
-  align-self: flex-start;
+  align-self: center;
   padding: 10px 22px;
   border: none;
   border-radius: 999px;
