@@ -18,19 +18,32 @@ export default function MyProfile() {
 
   async function fetchUserData() {
     setLoading(true);
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) { setLoading(false); return; }
+    try {
+      // 1. Check for session first
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        setLoading(false);
+        return;
+      }
 
-    const { data: profileData } = await supabase.from("profiles").select("*").eq("id", user.id).single();
-    if (profileData) setProfile(profileData);
+      const user = session.user;
 
-    const { data: favData } = await supabase.from("favorites").select(`listings (*)`).eq("user_id", user.id);
-    if (favData) setFavorites(favData.map(f => f.listings).filter(l => l !== null));
+      // 2. Fetch profile, favorites, and listings
+      const { data: profileData } = await supabase.from("profiles").select("*").eq("id", user.id).single();
+      if (profileData) setProfile(profileData);
 
-    const { data: myData } = await supabase.from("listings").select("*").eq("user_id", user.id);
-    if (myData) setMyListings(myData);
+      const { data: favData } = await supabase.from("favorites").select(`listings (*)`).eq("user_id", user.id);
+      if (favData) setFavorites(favData.map(f => f.listings).filter(l => l !== null));
 
-    setLoading(false);
+      const { data: myData } = await supabase.from("listings").select("*").eq("user_id", user.id);
+      if (myData) setMyListings(myData);
+
+    } catch (error) {
+      console.error("Error loading profile:", error.message);
+    } finally {
+      setLoading(false);
+    }
   }
 
   async function handleUploadAvatar(e) {
@@ -63,8 +76,23 @@ export default function MyProfile() {
     if (!error) setMyListings(myListings.filter(l => l.id !== listingId));
   }
 
-  if (loading) return <div style={{ padding: "30px" }}>Loading profile...</div>;
-  if (!profile) return <div style={{ padding: "30px" }}><h2>Please Log In</h2></div>;
+  if (loading) return <div style={{ padding: "100px", textAlign: "center" }}>Loading profile...</div>;
+
+  // UPDATED REDIRECT FOR LOGGED OUT USERS
+  if (!profile) {
+    return (
+      <div style={{ padding: "100px", textAlign: "center", fontFamily: "sans-serif" }}>
+        <h2 style={{ marginBottom: "10px" }}>Access Denied</h2>
+        <p style={{ color: "#666", marginBottom: "30px" }}>You must be logged in to view your profile.</p>
+        <button 
+          onClick={() => navigate("/login")} 
+          style={addBtnStyle}
+        >
+          Go to Login
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div style={{ padding: "40px", maxWidth: "1000px", margin: "0 auto", fontFamily: "sans-serif" }}>
@@ -108,7 +136,6 @@ export default function MyProfile() {
                   <h4 style={{ margin: "0 0 5px 0" }}>{listing.title}</h4>
                   <p style={{ color: "#0984e3", fontWeight: "bold", margin: 0 }}>${listing.rent}/mo</p>
                   <div style={{ display: "flex", gap: "10px", marginTop: "10px" }}>
-                    {/* FIXED NAVIGATION PATH */}
                     <button onClick={() => navigate(`/listing/${listing.id}`)} style={editBtnStyle}>View Live</button>
                     <button onClick={() => handleDeleteListing(listing.id)} style={deleteBtnStyle}>Delete</button>
                   </div>
@@ -130,7 +157,6 @@ export default function MyProfile() {
                 <div style={{ padding: "12px" }}>
                   <h4 style={{ margin: "0 0 5px 0" }}>{listing.title}</h4>
                   <p style={{ margin: "0 0 10px 0", fontSize: "0.85rem", color: "#666" }}>{listing.city}, {listing.state}</p>
-                  {/* FIXED NAVIGATION PATH */}
                   <button onClick={() => navigate(`/listing/${listing.id}`)} style={viewBtnStyle}>View Listing</button>
                 </div>
               </div>
@@ -148,7 +174,7 @@ export default function MyProfile() {
   );
 }
 
-// --- STYLES (Consolidated) ---
+// --- STYLES ---
 const sectionStyle = { marginBottom: "50px", paddingBottom: "30px", borderBottom: "1px solid #eee" };
 const detailItem = { marginBottom: "15px" };
 const labelStyle = { fontSize: "11px", fontWeight: "bold", color: "#666", marginBottom: "5px", display: "block" };
