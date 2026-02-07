@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { supabase } from "../supabaseClient"; 
+import { useNavigate } from "react-router-dom";
 
 export default function Signup() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState(""); // NEW: State for confirmation
   const [firstname, setFirstname] = useState("");
   const [lastname, setLastname] = useState("");
   const [university, setUniversity] = useState("");
@@ -15,8 +17,16 @@ export default function Signup() {
     setLoading(true);
     setMessage("");
 
+    // 1. EDU Email Validation
     if (!email.endsWith(".edu")) {
       setMessage("❌ Please use a valid .edu email address.");
+      setLoading(false);
+      return;
+    }
+
+    // 2. NEW: Password Confirmation Check
+    if (password !== confirmPassword) {
+      setMessage("❌ Passwords do not match.");
       setLoading(false);
       return;
     }
@@ -36,12 +46,12 @@ export default function Signup() {
     if (error) {
       setMessage(`❌ ${error.message}`);
     } else {
-      setMessage("✅ Success! Check your email for a link.");
+      // UPDATED: Patient confirmation message
+      setMessage("✅ Success! Please check your email for a confirmation link. Please be patient, as it may take up to 1 minute to arrive.");
     }
     setLoading(false);
   }
 
-  // This ensures they stay vertical
   const inputStyle = { 
     padding: "10px", 
     width: "300px", 
@@ -50,7 +60,7 @@ export default function Signup() {
   };
 
   return (
-    <div style={{ padding: "30px" }}>
+    <div style={{ padding: "30px", fontFamily: "sans-serif" }}>
       <h2>Student Signup</h2>
       <p>Only verified college students can join.</p>
 
@@ -92,17 +102,44 @@ export default function Signup() {
           required
           style={inputStyle}
         />
+        {/* NEW: Confirm Password Input */}
+        <input
+          type="password"
+          placeholder="Confirm Password"
+          value={confirmPassword}
+          onChange={(e) => setConfirmPassword(e.target.value)}
+          required
+          style={inputStyle}
+        />
 
         <button 
           type="submit" 
           disabled={loading} 
-          style={{ padding: "10px", width: "324px", cursor: "pointer" }}
+          style={{ 
+            padding: "10px", 
+            width: "324px", 
+            cursor: "pointer",
+            backgroundColor: "#0984e3",
+            color: "white",
+            border: "none",
+            borderRadius: "4px",
+            fontWeight: "bold"
+          }}
         >
           {loading ? "Registering..." : "Sign Up"}
         </button>
       </form>
 
-      {message && <p style={{ marginTop: "15px" }}>{message}</p>}
+      {message && (
+        <div style={{ 
+          marginTop: "15px", 
+          maxWidth: "324px", 
+          lineHeight: "1.4",
+          color: message.includes("✅") ? "#2d3436" : "#d63031" 
+        }}>
+          {message}
+        </div>
+      )}
     </div>
   );
 }
