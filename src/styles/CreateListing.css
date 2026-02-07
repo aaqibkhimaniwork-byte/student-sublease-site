@@ -1,69 +1,111 @@
-.splash-outer {
-  background: #222;
-  min-height: 100vh;
-  padding: 12px;
+.create-page .splash-main {
+  align-items: stretch;
 }
 
-.splash-inner {
-  background: #fff;
-  min-height: calc(100vh - 24px);
+.create-shell {
+  width: 100%;
+  max-width: 1100px;
+  min-height: calc(100vh - 140px);
+  background: #ffffff;
+  border-radius: 18px;
+  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.35);
+  overflow: hidden;
+  padding: 32px;
 }
 
-.splash-header {
-  background-color: #e8e8e8;
-  padding: 12px 20px;
-}
-
-.header-content {
+.create-content {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  max-width: 1200px;
-  margin: 0 auto;
+  flex-direction: column;
+  gap: 24px;
 }
 
-.app-title {
-  font-size: 34px;
-  font-weight: 500;
-  color: #111;
-  margin: 0;
+.create-empty {
+  text-align: center;
+  color: #1b2540;
+  padding: 40px 0;
 }
 
-.main-nav ul {
+.create-form {
   display: flex;
-  gap: 28px;
-  list-style: none;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.create-form h2 {
   margin: 0;
-  padding: 0;
+  font-size: 24px;
+  color: #1b2540;
 }
 
-.main-nav li {
-  font-size: 18px;
-  color: #111;
+.create-form section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #eef1f6;
 }
 
-.auth-wrap {
+.create-form section:last-of-type {
+  border-bottom: none;
 }
 
-.login-button {
-  padding: 8px 20px;
-  background-color: #dcdcdc;
-  border: 2px solid #000;
-  border-radius: 24px;
-  font-size: 16px;
-  font-weight: 500;
-  color: #000;
-  text-decoration: none;
+.create-form input,
+.create-form textarea {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid #dde2ee;
+  font-size: 14px;
+  font-family: inherit;
+}
+
+.create-form textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.create-form label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1b2540;
+}
+
+.create-form strong {
+  color: #1b2540;
+}
+
+.create-form button.create-primary,
+.create-primary {
+  align-self: flex-start;
+  padding: 10px 22px;
+  border: none;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #4565ff 0%, #3d58e6 100%);
+  color: #fff;
+  font-weight: 600;
   cursor: pointer;
-  transition: all 0.15s ease;
 }
 
-.login-button:hover {
-  background-color: #cfcfcf;
+.create-muted {
+  margin: 0;
+  font-size: 14px;
+  color: #6a7388;
 }
 
-.splash-main {
-  min-height: calc(100vh - 72px);
-  background-color: #fff;
-  padding: 40px 20px;
+.create-muted a {
+  color: #4565ff;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+@media (max-width: 900px) {
+  .create-shell {
+    padding: 24px;
+  }
+}
+
+@media (max-width: 768px) {
+  .create-page .splash-main {
+    padding: 30px 20px 50px;
+  }
 }
