@@ -1,0 +1,69 @@
+.splash-outer {
+  background: #222;
+  min-height: 100vh;
+  padding: 12px;
+}
+
+.splash-inner {
+  background: #fff;
+  min-height: calc(100vh - 24px);
+}
+
+.splash-header {
+  background-color: #e8e8e8;
+  padding: 12px 20px;
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.app-title {
+  font-size: 34px;
+  font-weight: 500;
+  color: #111;
+  margin: 0;
+}
+
+.main-nav ul {
+  display: flex;
+  gap: 28px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.main-nav li {
+  font-size: 18px;
+  color: #111;
+}
+
+.auth-wrap {
+}
+
+.login-button {
+  padding: 8px 20px;
+  background-color: #dcdcdc;
+  border: 2px solid #000;
+  border-radius: 24px;
+  font-size: 16px;
+  font-weight: 500;
+  color: #000;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.login-button:hover {
+  background-color: #cfcfcf;
+}
+
+.splash-main {
+  min-height: calc(100vh - 72px);
+  background-color: #fff;
+  padding: 40px 20px;
+}
