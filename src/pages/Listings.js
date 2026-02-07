@@ -9,6 +9,7 @@ export default function Listings() {
   const [loading, setLoading] = useState(true);
   const [expandedId, setExpandedId] = useState(null);
   const navigate = useNavigate();
+  const [uniSearch, setUniSearch] = useState("");
 
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
@@ -56,6 +57,26 @@ export default function Listings() {
     }
     setLoading(false);
   }
+
+  useEffect(() => {
+  async function fetchListings() {
+    setLoading(true);
+
+    const query = filters.university
+      ? `?university=${encodeURIComponent(filters.university)}`
+      : "";
+
+    const res = await fetch(`http://localhost:5000/api/listings${query}`);
+    const data = await res.json();
+
+    setDbListings(data);
+    setLoading(false);
+  }
+
+  fetchListings();
+}, [filters.university]);
+
+
 
   // Toggle Favorite logic
   const toggleFavorite = async (e, listingId) => {
@@ -108,7 +129,21 @@ export default function Listings() {
       <div style={filterPanelStyle}>
         <div style={filterColumnStyle}>
           <h4>Search Area</h4>
-          <input placeholder="University" onChange={(e) => {setFilters({...filters, university: e.target.value}); setCurrentPage(1);}} style={inputStyle} />
+<input
+  placeholder="University"
+  value={uniSearch}           // bind to uniSearch
+  onChange={(e) => setUniSearch(e.target.value)}  // typing only updates uniSearch
+  style={inputStyle}
+/>
+<button
+  onClick={() => {
+    setFilters({ ...filters, university: uniSearch }); // trigger backend fetch
+    setCurrentPage(1);
+  }}
+  style={{ marginTop: "5px" }}
+>
+  Search
+</button>
           <input placeholder="City" onChange={(e) => {setFilters({...filters, city: e.target.value}); setCurrentPage(1);}} style={inputStyle} />
         </div>
         <div style={filterColumnStyle}>

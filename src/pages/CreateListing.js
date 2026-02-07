@@ -11,6 +11,9 @@ export default function CreateListing() {
   const [authChecked, setAuthChecked] = useState(false);
   const [images, setImages] = useState([]);
 
+  const [uniOptions, setUniOptions] = useState([]);
+  const [uniQuery, setUniQuery] = useState("");
+
   // Form states
   const [listingData, setListingData] = useState({
     title: "",
@@ -40,6 +43,20 @@ export default function CreateListing() {
     checkUser();
   }, []);
 
+  useEffect(() => {
+  async function fetchUniversities() {
+    try {
+      const res = await fetch("http://localhost:5000/api/universities");
+      const data = await res.json();
+      setUniOptions(data);
+    } catch (err) {
+      console.log("Error fetching universities:", err);
+    }
+  }
+
+  fetchUniversities();
+}, []);
+
   function handleChange(e) {
     const { name, type, value, checked } = e.target;
     setListingData(prev => ({
@@ -57,14 +74,46 @@ export default function CreateListing() {
     setImages([...images, ...files]);
   };
 
+  async function geocodeAddress(address) {
+  const token = process.env.REACT_APP_MAPBOX_TOKEN;
+
+  const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(
+    address
+  )}.json?access_token=${token}`;
+
+  const res = await fetch(url);
+  const data = await res.json();
+
+  if (!data.features || data.features.length === 0) {
+    throw new Error("Address not found");
+  }
+
+  // Mapbox returns [lng, lat]
+  const [lng, lat] = data.features[0].center;
+
+  return { lat, lng };
+}
+
   async function handleSubmit(e) {
     e.preventDefault();
     if (images.length < 1) {
       alert("Please upload at least one image.");
       return;
     }
+
+    const fullAddress = `${listingData.street_address}, ${listingData.city}, ${listingData.state} ${listingData.zip_code}`;
     
     setLoading(true);
+
+    let coordinates;
+
+    try {
+        coordinates = await geocodeAddress(fullAddress);
+        console.log("Coordinates:", coordinates);
+    } catch (err) {
+        alert("Could not find location for this address.");
+        return;
+    }
 
     try {
       const imageUrls = [];
@@ -93,7 +142,11 @@ export default function CreateListing() {
           zip_code: listingData.zip_code,
           rent: parseInt(listingData.rent),
           sq_ft: parseInt(listingData.sqft),
-          universities: listingData.universities.split(",").map((u) => u.trim()),
+
+          lat: coordinates.lat,
+          lng: coordinates.lng,
+
+          universities: [listingData.universities],   
           lease_start: listingData.lease_start,
           lease_end: listingData.lease_end,
           parking_available: listingData.parking,
@@ -160,7 +213,54 @@ export default function CreateListing() {
 
         <section>
           <p><strong>Details</strong></p>
-          <input name="universities" placeholder="Nearby Universities (comma separated)" value={listingData.universities} onChange={handleChange} required />
+<label><strong>Nearby University</strong></label>
+
+    <input
+  placeholder="Start typing a university..."
+  value={uniQuery}
+  onChange={(e) => setUniQuery(e.target.value)}
+  required
+    />
+
+    {/* Suggestions dropdown */}
+    {uniQuery.length > 1 && (
+    <div
+        style={{
+      border: "1px solid #ddd",
+      borderRadius: "8px",
+      background: "white",
+      maxHeight: "150px",
+      overflowY: "auto",
+      marginTop: "5px",
+      padding: "5px",
+        }}
+    >
+        {uniOptions
+        .filter((u) =>
+            u.name.toLowerCase().includes(uniQuery.toLowerCase())
+      )
+        .slice(0, 6)
+        .map((u) => (
+            <p
+            key={u._id}
+            style={{
+                padding: "6px",
+                cursor: "pointer",
+                margin: 0,
+            }}
+            onClick={() => {
+                setListingData((prev) => ({
+                ...prev,
+                universities: u.name,
+                }));
+                setUniQuery(u.name);
+            }}
+            >
+            {u.name}
+            </p>
+        ))}
+    </div>
+)}
           <input type="number" name="rent" placeholder="Monthly Rent ($)" value={listingData.rent} onChange={handleChange} required />
           <input type="number" name="sqft" placeholder="Square Footage" value={listingData.sqft} onChange={handleChange} required />
         </section>
