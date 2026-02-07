@@ -118,12 +118,12 @@ export default function SplashPage() {
 
                 <div className="search-form">
                   <div className="search-input-group">
-                    <label>Location</label>
+                    <label>Enter University</label>
                     <input 
                       type="text" 
                       value={location}
                       onChange={(e) => setLocation(e.target.value)}
-                      placeholder="Enter location"
+                      placeholder="e.g., University of Georgia"
                     />
                   </div>
                   <button className="search-button">Search</button>
