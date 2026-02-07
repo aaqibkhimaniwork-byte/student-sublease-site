@@ -489,3 +489,25 @@
   position: relative;
   z-index: 40;
 }
+
+.profile-button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  color: #2d3436;
+  font-weight: 600;
+}
+
+.profile-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #0984e3;
+}
+
+.profile-name {
+  font-size: 0.9rem;
+}
+

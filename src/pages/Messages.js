@@ -11,6 +11,7 @@ export default function Messages() {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const [currentUser, setCurrentUser] = useState(null);
+  const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
 
   const scrollRef = useRef(null);
@@ -25,25 +26,34 @@ export default function Messages() {
     scrollRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
+  // Fetch current user and profile
   useEffect(() => {
-    init();
-  }, []);
+    async function fetchUserAndProfile() {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        setLoading(false);
+        return;
+      }
 
-  async function init() {
-    const { data: { user } } = await supabase.auth.getUser();
+      setCurrentUser(user);
 
-    if (!user) {
+      const { data: profileData, error } = await supabase
+        .from("profiles")
+        .select("firstname, lastname, profilepic_url")
+        .eq("id", user.id)
+        .single();
+
+      if (!error) setProfile(profileData);
+
+      await loadInbox(user.id);
+      subscribeToRealtime(user.id);
       setLoading(false);
-      return;
     }
 
-    setCurrentUser(user);
-    await loadInbox();
-    subscribeToRealtime(user.id);
-    setLoading(false);
-  }
+    fetchUserAndProfile();
+  }, []);
 
-  async function loadInbox() {
+  async function loadInbox(userId) {
     const { data, error } = await supabase
       .from("inbox_threads")
       .select(`
@@ -64,7 +74,6 @@ export default function Messages() {
   }
 
   function subscribeToRealtime(userId) {
-    // Listen to ALL messages where current user is sender OR receiver
     const channel = supabase
       .channel("realtime-messages")
       .on(
@@ -76,26 +85,9 @@ export default function Messages() {
           filter: `receiver_id=eq.${userId}`
         },
         (payload) => {
-          const chat = activeChatRef.current;
-
-          // Update inbox preview
-          loadInbox();
-
-          // If user is viewing the chat, append it
-          if (chat && payload.new.conversation_id === chat.conversation_id) {
-            setMessages((prev) => {
-              const index = prev.findIndex(
-                (m) => m.client_id && m.client_id === payload.new.client_id
-              );
-
-              if (index !== -1) {
-                const copy = [...prev];
-                copy[index] = payload.new;
-                return copy;
-              }
-
-              return [...prev, payload.new];
-            });
+          loadInbox(userId);
+          if (activeChatRef.current && payload.new.conversation_id === activeChatRef.current.conversation_id) {
+            setMessages((prev) => [...prev, payload.new]);
           }
         }
       )
@@ -123,10 +115,9 @@ export default function Messages() {
 
   async function handleSendMessage(e) {
     e.preventDefault();
-    if (!newMessage.trim() || !activeChat) return;
+    if (!newMessage.trim() || !activeChat || !currentUser) return;
 
     const clientId = crypto.randomUUID();
-
     const optimisticMessage = {
       id: clientId,
       client_id: clientId,
@@ -153,11 +144,10 @@ export default function Messages() {
       content: optimisticMessage.content
     }]);
 
-    if (error) {
-      console.error("Send message error:", error);
-    }
+    if (error) console.error("Send message error:", error);
   }
 
+  // --- HEADER SAME AS SPLASHPAGE/LOGIN ---
   function renderHeader() {
     return (
       <header className="splash-header">
@@ -168,21 +158,30 @@ export default function Messages() {
               <h1 className="app-title">Easy Lease</h1>
             </Link>
           </div>
+
           <nav className="main-nav" aria-label="primary">
             <ul>
-              <li><Link to="/">Listings</Link></li>
+              <li><Link to="/listings">Listings</Link></li>
               <li><Link to="/create">Create a Listing</Link></li>
               <li><Link to="/messages">Messages</Link></li>
             </ul>
           </nav>
+
           <div className="auth-wrap">
-            {currentUser ? (
-              <Link to="/myprofile" className="contact-button">
-                My Profile
+            {currentUser && profile ? (
+              <Link to="/myprofile" className="profile-button">
+                <img
+                  src={profile.profilepic_url}
+                  alt="Profile"
+                  className="profile-avatar"
+                />
+                <span className="profile-name" style={{ color: "white" }}>
+                  {profile.firstname} {profile.lastname}
+                </span>
               </Link>
             ) : (
               <Link to="/login" className="contact-button">
-                Log In/ Sign up
+                Log In / Sign Up
               </Link>
             )}
           </div>
@@ -197,9 +196,7 @@ export default function Messages() {
         <div className="splash-inner">
           {renderHeader()}
           <main className="splash-main">
-            <div className="messages-empty">
-              Loading chats...
-            </div>
+            <div className="messages-empty">Loading chats...</div>
           </main>
         </div>
       </div>
@@ -215,7 +212,7 @@ export default function Messages() {
             <div className="messages-empty">
               <h2>Your Inbox</h2>
               <p>Please log in to view and send messages.</p>
-              <button onClick={() => navigate("/login")} className="messages-primary">
+              <button onClick={() => navigate("/login")} className="search-button">
                 Go to Login
               </button>
             </div>
@@ -275,18 +272,14 @@ export default function Messages() {
                   </div>
 
                   <div className="chat-messages">
-                    {messages.map((msg) => {
-                      const isOwn = msg.sender_id === currentUser.id;
-
-                      return (
-                        <div
-                          key={msg.id}
-                          className={`message-bubble ${isOwn ? "own" : "other"}`}
-                        >
-                          {msg.content}
-                        </div>
-                      );
-                    })}
+                    {messages.map((msg) => (
+                      <div
+                        key={msg.id}
+                        className={`message-bubble ${msg.sender_id === currentUser.id ? "own" : "other"}`}
+                      >
+                        {msg.content}
+                      </div>
+                    ))}
                     <div ref={scrollRef} />
                   </div>
 
@@ -297,7 +290,7 @@ export default function Messages() {
                       placeholder="Type a message..."
                       className="chat-text"
                     />
-                    <button type="submit" className="messages-primary">
+                    <button type="submit" className="search-button">
                       Send
                     </button>
                   </form>
