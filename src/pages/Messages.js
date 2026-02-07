@@ -26,7 +26,6 @@ export default function Messages() {
     scrollRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // Fetch current user and profile
   useEffect(() => {
     async function fetchUserAndProfile() {
       const { data: { user } } = await supabase.auth.getUser();
@@ -37,13 +36,13 @@ export default function Messages() {
 
       setCurrentUser(user);
 
-      const { data: profileData, error } = await supabase
+      const { data: profileData } = await supabase
         .from("profiles")
         .select("firstname, lastname, profilepic_url")
         .eq("id", user.id)
         .single();
 
-      if (!error) setProfile(profileData);
+      setProfile(profileData);
 
       await loadInbox(user.id);
       subscribeToRealtime(user.id);
@@ -54,7 +53,7 @@ export default function Messages() {
   }, []);
 
   async function loadInbox(userId) {
-    const { data, error } = await supabase
+    const { data } = await supabase
       .from("inbox_threads")
       .select(`
         conversation_id,
@@ -64,11 +63,6 @@ export default function Messages() {
         receiver:receiver_id(id, firstname, lastname, profilepic_url)
       `)
       .order("created_at", { ascending: false });
-
-    if (error) {
-      console.error("Inbox load error:", error);
-      return;
-    }
 
     setConversations(data || []);
   }
@@ -86,7 +80,10 @@ export default function Messages() {
         },
         (payload) => {
           loadInbox(userId);
-          if (activeChatRef.current && payload.new.conversation_id === activeChatRef.current.conversation_id) {
+          if (
+            activeChatRef.current &&
+            payload.new.conversation_id === activeChatRef.current.conversation_id
+          ) {
             setMessages((prev) => [...prev, payload.new]);
           }
         }
@@ -99,16 +96,11 @@ export default function Messages() {
   async function loadConversation(chat) {
     setActiveChat(chat);
 
-    const { data, error } = await supabase
+    const { data } = await supabase
       .from("messages")
       .select("*")
       .eq("conversation_id", chat.conversation_id)
       .order("created_at", { ascending: true });
-
-    if (error) {
-      console.error("Conversation load error:", error);
-      return;
-    }
 
     setMessages(data || []);
   }
@@ -118,14 +110,13 @@ export default function Messages() {
     if (!newMessage.trim() || !activeChat || !currentUser) return;
 
     const clientId = crypto.randomUUID();
+
     const optimisticMessage = {
       id: clientId,
-      client_id: clientId,
       conversation_id: activeChat.conversation_id,
       sender_id: currentUser.id,
       content: newMessage,
-      created_at: new Date().toISOString(),
-      optimistic: true
+      created_at: new Date().toISOString()
     };
 
     setMessages((prev) => [...prev, optimisticMessage]);
@@ -136,18 +127,15 @@ export default function Messages() {
         ? activeChat.receiver.id
         : activeChat.sender.id;
 
-    const { error } = await supabase.from("messages").insert([{
+    await supabase.from("messages").insert([{
       client_id: clientId,
       conversation_id: activeChat.conversation_id,
       sender_id: currentUser.id,
       receiver_id: recipientId,
       content: optimisticMessage.content
     }]);
-
-    if (error) console.error("Send message error:", error);
   }
 
-  // --- HEADER SAME AS SPLASHPAGE/LOGIN ---
   function renderHeader() {
     return (
       <header className="splash-header">
@@ -159,7 +147,7 @@ export default function Messages() {
             </Link>
           </div>
 
-          <nav className="main-nav" aria-label="primary">
+          <nav className="main-nav">
             <ul>
               <li><Link to="/listings">Listings</Link></li>
               <li><Link to="/create">Create a Listing</Link></li>
@@ -203,31 +191,14 @@ export default function Messages() {
     );
   }
 
-  if (!currentUser) {
-    return (
-      <div className="splash-outer messages-page">
-        <div className="splash-inner">
-          {renderHeader()}
-          <main className="splash-main">
-            <div className="messages-empty">
-              <h2>Your Inbox</h2>
-              <p>Please log in to view and send messages.</p>
-              <button onClick={() => navigate("/login")} className="search-button">
-                Go to Login
-              </button>
-            </div>
-          </main>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="splash-outer messages-page">
       <div className="splash-inner">
         {renderHeader()}
         <main className="splash-main">
           <section className="messages-shell">
+
+            {/* SIDEBAR */}
             <aside className="messages-sidebar">
               <h3 className="messages-title">Messages</h3>
 
@@ -236,8 +207,12 @@ export default function Messages() {
               ) : (
                 conversations.map((chat) => {
                   const otherUser =
-                    chat.sender.id === currentUser.id ? chat.receiver : chat.sender;
-                  const isActive = activeChat?.conversation_id === chat.conversation_id;
+                    chat.sender.id === currentUser.id
+                      ? chat.receiver
+                      : chat.sender;
+
+                  const isActive =
+                    activeChat?.conversation_id === chat.conversation_id;
 
                   return (
                     <button
@@ -246,12 +221,18 @@ export default function Messages() {
                       className={`conversation-item${isActive ? " active" : ""}`}
                       type="button"
                     >
-                      <img src={otherUser.profilepic_url} alt="Profile" className="conversation-avatar" />
+                      <img
+                        src={otherUser.profilepic_url}
+                        alt="Profile"
+                        className="conversation-avatar"
+                      />
                       <div className="conversation-body">
                         <div className="conversation-name">
                           {otherUser.firstname} {otherUser.lastname}
                         </div>
-                        <div className="conversation-preview">{chat.last_message}</div>
+                        <div className="conversation-preview">
+                          {chat.last_message}
+                        </div>
                       </div>
                     </button>
                   );
@@ -259,6 +240,7 @@ export default function Messages() {
               )}
             </aside>
 
+            {/* CHAT AREA */}
             <section className="messages-chat">
               {activeChat ? (
                 <>
@@ -275,7 +257,9 @@ export default function Messages() {
                     {messages.map((msg) => (
                       <div
                         key={msg.id}
-                        className={`message-bubble ${msg.sender_id === currentUser.id ? "own" : "other"}`}
+                        className={`message-bubble ${
+                          msg.sender_id === currentUser.id ? "own" : "other"
+                        }`}
                       >
                         {msg.content}
                       </div>
@@ -301,6 +285,7 @@ export default function Messages() {
                 </div>
               )}
             </section>
+
           </section>
         </main>
       </div>

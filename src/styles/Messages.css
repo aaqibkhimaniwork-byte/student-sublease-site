@@ -1,28 +1,63 @@
-.messages-page .splash-main {
-  align-items: stretch;
-}
+/* ============================= */
+/* PAGE LOCK */
+/* ============================= */
 
-.messages-shell {
-  width: 100%;
-  max-width: 1200px;
-  height: calc(100vh - 140px);
-  background: #ffffff;
-  border-radius: 18px;
-  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.35);
+.messages-page {
+  height: 100vh;
   overflow: hidden;
-  display: grid;
-  grid-template-columns: 320px 1fr;
 }
 
-.messages-sidebar {
-  background: #f7f8fb;
-  border-right: 1px solid #e8ecf3;
+/* Override splash layout ONLY for messages page */
+.messages-page .splash-inner {
+  height: 100vh;
   display: flex;
   flex-direction: column;
 }
 
+.messages-page .splash-main {
+  flex: 1;
+  padding: 20px;              /* controlled padding */
+  display: flex;
+  align-items: stretch;       /* VERY IMPORTANT */
+  justify-content: center;
+  overflow: hidden;           /* prevent page scroll */
+}
+
+
+/* ============================= */
+/* MAIN SHELL */
+/* ============================= */
+
+.messages-shell {
+  width: 100%;
+  max-width: 1200px;
+  height: 100%;
+  background: #ffffff;
+  border-radius: 18px;
+  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.25);
+  overflow: hidden;
+
+  display: grid;
+  grid-template-columns: 320px 1fr;
+}
+
+
+/* ============================= */
+/* SIDEBAR */
+/* ============================= */
+
+.messages-sidebar {
+  background: #f7f8fb;
+  border-right: 1px solid #e8ecf3;
+
+  display: flex;
+  flex-direction: column;
+
+  overflow-y: auto;   /* independent scroll */
+}
+
 .messages-title {
-  padding: 20px 20px 8px;
+  padding: 20px;
   margin: 0;
   font-size: 18px;
   color: #1b2540;
@@ -42,6 +77,11 @@
   text-align: left;
   cursor: pointer;
   border-bottom: 1px solid #e9edf5;
+  transition: background 0.2s ease;
+}
+
+.conversation-item:hover {
+  background: rgba(69, 101, 255, 0.08);
 }
 
 .conversation-item.active {
@@ -73,9 +113,15 @@
   text-overflow: ellipsis;
 }
 
+
+/* ============================= */
+/* CHAT SECTION */
+/* ============================= */
+
 .messages-chat {
   display: flex;
   flex-direction: column;
+  overflow: hidden;   /* prevents page expansion */
   background: #ffffff;
 }
 
@@ -83,16 +129,22 @@
   padding: 16px 20px;
   border-bottom: 1px solid #eef1f6;
   color: #1b2540;
+  flex-shrink: 0;
 }
 
 .chat-messages {
   flex: 1;
   padding: 20px;
-  overflow-y: auto;
+  overflow-y: auto;     /* THIS is the scroll area */
   display: flex;
   flex-direction: column;
   gap: 10px;
-  background: linear-gradient(180deg, #f8f9fc 0%, #ffffff 60%);
+
+  background: linear-gradient(
+    180deg,
+    #f8f9fc 0%,
+    #ffffff 60%
+  );
 }
 
 .message-bubble {
@@ -101,11 +153,16 @@
   border-radius: 16px;
   font-size: 14px;
   line-height: 1.4;
+  word-wrap: break-word;
 }
 
 .message-bubble.own {
   align-self: flex-end;
-  background: linear-gradient(135deg, #4565ff 0%, #3d58e6 100%);
+  background: linear-gradient(
+    135deg,
+    #4565ff 0%,
+    #3d58e6 100%
+  );
   color: #ffffff;
 }
 
@@ -115,11 +172,17 @@
   color: #1b2540;
 }
 
+
+/* ============================= */
+/* INPUT */
+/* ============================= */
+
 .chat-input {
   padding: 16px 20px;
   border-top: 1px solid #eef1f6;
   display: flex;
   gap: 12px;
+  flex-shrink: 0;
 }
 
 .chat-text {
@@ -131,9 +194,14 @@
   font-size: 14px;
 }
 
-.messages-primary {
+.messages-primary,
+.search-button {
   padding: 0 22px;
-  background: linear-gradient(135deg, #4565ff 0%, #3d58e6 100%);
+  background: linear-gradient(
+    135deg,
+    #4565ff 0%,
+    #3d58e6 100%
+  );
   color: #fff;
   border: none;
   border-radius: 999px;
@@ -141,33 +209,34 @@
   cursor: pointer;
 }
 
+
+/* ============================= */
+/* EMPTY STATE */
+/* ============================= */
+
 .messages-empty {
-  min-height: 360px;
+  flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   text-align: center;
-  color: #f0f2f8;
+  color: #6a7388;
   gap: 12px;
 }
 
-.messages-empty h2 {
-  margin: 0;
-}
+
+/* ============================= */
+/* MOBILE */
+/* ============================= */
 
 @media (max-width: 900px) {
   .messages-shell {
     grid-template-columns: 1fr;
-    height: auto;
   }
 
   .messages-sidebar {
-    max-height: 280px;
+    max-height: 260px;
     overflow-y: auto;
-  }
-
-  .messages-page .splash-main {
-    padding: 30px 20px 50px;
   }
 }
