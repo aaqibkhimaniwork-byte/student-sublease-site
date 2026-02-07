@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { supabase } from "../supabaseClient"; 
+import { supabase } from "../supabaseClient";
+import "../styles/Signup.css";
 
 export default function Signup() {
   const [email, setEmail] = useState("");
@@ -8,101 +9,104 @@ export default function Signup() {
   const [lastname, setLastname] = useState("");
   const [university, setUniversity] = useState("");
   const [message, setMessage] = useState("");
+  const [messageType, setMessageType] = useState(""); // "success" | "error" | ""
   const [loading, setLoading] = useState(false);
 
   async function handleSignup(e) {
     e.preventDefault();
     setLoading(true);
     setMessage("");
+    setMessageType("");
 
-    if (!email.endsWith(".edu")) {
+    const cleanEmail = email.trim().toLowerCase();
+
+    if (!cleanEmail.endsWith(".edu")) {
       setMessage("❌ Please use a valid .edu email address.");
+      setMessageType("error");
       setLoading(false);
       return;
     }
 
-    const { data, error } = await supabase.auth.signUp({
-      email: email,
-      password: password,
+    const { error } = await supabase.auth.signUp({
+      email: cleanEmail,
+      password,
       options: {
         data: {
-          firstname: firstname,
-          lastname: lastname,
-          university: university,
+          firstname: firstname.trim(),
+          lastname: lastname.trim(),
+          university: university.trim(),
         },
       },
     });
 
     if (error) {
       setMessage(`❌ ${error.message}`);
+      setMessageType("error");
     } else {
       setMessage("✅ Success! Check your email for a link.");
+      setMessageType("success");
     }
+
     setLoading(false);
   }
 
-  // This ensures they stay vertical
-  const inputStyle = { 
-    padding: "10px", 
-    width: "300px", 
-    display: "block", 
-    marginBottom: "10px" 
-  };
-
   return (
-    <div style={{ padding: "30px" }}>
-      <h2>Student Signup</h2>
-      <p>Only verified college students can join.</p>
+    <div className="signup-page">
+      <h2 className="signup-title">Student Signup</h2>
+      <p className="signup-subtitle">Only verified college students can join.</p>
 
-      <form onSubmit={handleSignup}>
+      <form className="signup-form" onSubmit={handleSignup}>
         <input
+          className="signup-input"
           placeholder="First Name"
           value={firstname}
           onChange={(e) => setFirstname(e.target.value)}
           required
-          style={inputStyle}
         />
+
         <input
+          className="signup-input"
           placeholder="Last Name"
           value={lastname}
           onChange={(e) => setLastname(e.target.value)}
           required
-          style={inputStyle}
         />
+
         <input
+          className="signup-input"
           placeholder="University (e.g. UGA)"
           value={university}
           onChange={(e) => setUniversity(e.target.value)}
           required
-          style={inputStyle}
         />
+
         <input
+          className="signup-input"
           type="email"
           placeholder="Email (.edu)"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
-          style={inputStyle}
         />
+
         <input
+          className="signup-input"
           type="password"
           placeholder="Password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          minLength={8}
           required
-          style={inputStyle}
         />
 
-        <button 
-          type="submit" 
-          disabled={loading} 
-          style={{ padding: "10px", width: "324px", cursor: "pointer" }}
-        >
+        <button className="signup-button" type="submit" disabled={loading}>
           {loading ? "Registering..." : "Sign Up"}
         </button>
       </form>
 
-      {message && <p style={{ marginTop: "15px" }}>{message}</p>}
+      {message && (
+        <p className={`signup-message ${messageType}`}>{message}</p>
+      )}
     </div>
   );
 }
