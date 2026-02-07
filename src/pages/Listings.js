@@ -75,7 +75,7 @@ export default function Listings() {
       ? `?university=${encodeURIComponent(filters.university)}`
       : "";
 
-    const res = await fetch(`http://localhost:5000/api/listings${query}`);
+    const res = await fetch(`http://localhost:5050/api/listings${query}`);
     const data = await res.json();
 
     setDbListings(data);
@@ -89,7 +89,7 @@ export default function Listings() {
   useEffect(() => {
   async function fetchUniversities() {
     try {
-      const res = await fetch("http://localhost:5000/api/universities");
+      const res = await fetch("http://localhost:5050/api/universities");
       const data = await res.json();
       setUniversities(data.map(u => u.name)); // store only names
     } catch (err) {
