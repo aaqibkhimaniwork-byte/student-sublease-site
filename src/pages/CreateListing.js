@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { supabase } from "../supabaseClient";
 import { useNavigate, Link } from "react-router-dom";
 import home from "../assets/House Icon.webp";
-import "../styles/SplashPage.css";
 import "../styles/CreateListing.css";
 
 export default function CreateListing() {

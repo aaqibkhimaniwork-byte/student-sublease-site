@@ -11,6 +11,7 @@
   box-shadow: 0 30px 70px rgba(0, 0, 0, 0.35);
   overflow: hidden;
   padding: 32px;
+  margin-top: -32px;
 }
 
 .create-content {

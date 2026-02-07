@@ -1,12 +1,11 @@
 import { useState } from "react";
-import { BrowserRouter, Routes, Route, Link, useLocation } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import SplashPage from "./pages/SplashPage";
 import CreateListing from "./pages/CreateListing";
 import Listings from "./pages/Listings";
 import Signup from "./pages/Signup";
 import Login from "./pages/Login";
-import Home from "./pages/Home";
 import Messages from "./pages/Messages";
 import MyProfile from "./pages/MyProfile";
 import PublicProfile from "./pages/PublicProfile";
@@ -30,7 +29,6 @@ export default function App() {
         <Route path="/" element={<SplashPage />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/home" element={<Home />} />
         <Route path="/create" element={<CreateListing addListing={addListing} />} />
         <Route path="/listings" element={<Listings listings={listings} />} />
         <Route path="/messages" element={<Messages />} />
