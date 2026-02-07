@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import "../styles/SplashPage.css";
+import buildingImage from "../assets/building.jpg";
 
 export default function SplashPage() {
   const [activeTab, setActiveTab] = useState("buy");
@@ -19,7 +20,7 @@ export default function SplashPage() {
 
             <nav className="main-nav" aria-label="primary">
               <ul>
-                <li><Link to="/">TownHomes</Link></li>
+                <li><Link to="/">Townhomes</Link></li>
                 <li><Link to="/">Apartments</Link></li>
                 <li><Link to="/">Single Homes</Link></li>
                 <li><Link to="/">Condos</Link></li>
@@ -102,8 +103,8 @@ export default function SplashPage() {
             <div className="hero-right">
               <div className="building-image-container">
                 <img 
-                  src="https://images.unsplash.com/photo-1486138351130-50a78c2634cf?w=600&h=800&fit=crop" 
-                  alt="Modern Building" 
+                  src={buildingImage} 
+                  alt="Apartment Building" 
                   className="building-image"
                 />
               </div>
