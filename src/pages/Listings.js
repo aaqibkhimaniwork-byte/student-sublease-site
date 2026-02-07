@@ -1,6 +1,9 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../supabaseClient";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import home from "../assets/House Icon.webp";
+import "../styles/SplashPage.css";
+import "../styles/Listings.css";
 
 export default function Listings() {
   const [dbListings, setDbListings] = useState([]);
@@ -140,15 +143,62 @@ export default function Listings() {
   const currentListings = processedListings.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
   const totalPages = Math.ceil(processedListings.length / itemsPerPage);
 
-  if (loading) return <div style={{ padding: "20px" }}>Loading Listings...</div>;
+  function renderHeader() {
+    return (
+      <header className="splash-header">
+        <div className="header-content">
+          <div className="title-wrap">
+            <Link to="/" className="logo-link">
+              <img src={home} alt="House Icon" className="title-icon" />
+              <h1 className="app-title">Easy Lease</h1>
+            </Link>
+          </div>
+          <nav className="main-nav" aria-label="primary">
+            <ul>
+              <li><Link to="/listings">Listings</Link></li>
+              <li><Link to="/create">Create a Listing</Link></li>
+              <li><Link to="/messages">Messages</Link></li>
+            </ul>
+          </nav>
+          <div className="auth-wrap">
+            {user ? (
+              <Link to="/myprofile" className="contact-button">
+                My Profile
+              </Link>
+            ) : (
+              <Link to="/login" className="contact-button">
+                Log In/ Sign up
+              </Link>
+            )}
+          </div>
+        </div>
+      </header>
+    );
+  }
+
+  if (loading) {
+    return (
+      <div className="splash-outer listings-page">
+        <div className="splash-inner">
+          {renderHeader()}
+          <main className="splash-main">
+            <div className="messages-empty">Loading Listings...</div>
+          </main>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div style={{ padding: "40px", maxWidth: "1200px", margin: "0 auto", fontFamily: "sans-serif" }}>
-      
-      {/* FILTER PANEL */}
-      <div style={filterPanelStyle}>
-        <div style={filterColumnStyle}>
-          <h4>Search Area</h4>
+    <div className="splash-outer listings-page">
+      <div className="splash-inner">
+        {renderHeader()}
+        <main className="splash-main">
+          <section className="listings-shell">
+            <aside className="listings-sidebar">
+              <div style={filterPanelStyle}>
+                <div style={filterColumnStyle}>
+                  <h4>Search Area</h4>
 <div style={{ position: "relative" }}>
   <input
     placeholder="University"
@@ -197,25 +247,31 @@ export default function Listings() {
   Search
 </button>
           <input placeholder="City" onChange={(e) => {setFilters({...filters, city: e.target.value}); setCurrentPage(1);}} style={inputStyle} />
-        </div>
-        <div style={filterColumnStyle}>
-          <h4>Budget</h4>
-          <label style={labelStyle}>Max Rent: ${preferences.maxRent}</label>
-          <input type="range" min="400" max="5000" step="50" value={preferences.maxRent} 
-                 onChange={(e) => setPreferences({...preferences, maxRent: Number(e.target.value)})} style={{width: "100%"}} />
-        </div>
-        <div style={filterColumnStyle}>
-          <h4>Amenities</h4>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr" }}>
-            <label><input type="checkbox" onChange={(e) => setPreferences({...preferences, pets: e.target.checked})} /> Pets</label>
-            <label><input type="checkbox" onChange={(e) => setPreferences({...preferences, parking: e.target.checked})} /> Parking</label>
-            <label><input type="checkbox" onChange={(e) => setPreferences({...preferences, furnished: e.target.checked})} /> Furnished</label>
-          </div>
-        </div>
-      </div>
+                </div>
+                <div style={filterColumnStyle}>
+                  <h4>Budget</h4>
+                  <label style={labelStyle}>Max Rent: ${preferences.maxRent}</label>
+                  <input type="range" min="400" max="5000" step="50" value={preferences.maxRent} 
+                         onChange={(e) => setPreferences({...preferences, maxRent: Number(e.target.value)})} style={{width: "100%"}} />
+                </div>
+                <div style={filterColumnStyle}>
+                  <h4>Amenities</h4>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr" }}>
+                    <label><input type="checkbox" onChange={(e) => setPreferences({...preferences, pets: e.target.checked})} /> Pets</label>
+                    <label><input type="checkbox" onChange={(e) => setPreferences({...preferences, parking: e.target.checked})} /> Parking</label>
+                    <label><input type="checkbox" onChange={(e) => setPreferences({...preferences, furnished: e.target.checked})} /> Furnished</label>
+                  </div>
+                </div>
+              </div>
+            </aside>
 
-      {/* LISTINGS RESULTS */}
-      <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+            <section className="listings-content">
+              <div className="listings-head">
+                <h2>Listings</h2>
+                <p>{processedListings.length} results</p>
+              </div>
+
+              <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
         {currentListings.map(listing => {
           const isExpanded = expandedId === listing.id;
           const isFav = userFavorites.includes(listing.id);
@@ -311,13 +367,16 @@ export default function Listings() {
             </div>
           );
         })}
-      </div>
+              </div>
 
-      {/* PAGINATION */}
-      <div style={paginationStyle}>
-        <button disabled={currentPage === 1} onClick={() => setCurrentPage(c => c - 1)}>Prev</button>
-        <span style={{ fontSize: "0.9rem" }}>Page {currentPage} of {totalPages}</span>
-        <button disabled={currentPage === totalPages} onClick={() => setCurrentPage(c => c + 1)}>Next</button>
+              <div style={paginationStyle}>
+                <button disabled={currentPage === 1} onClick={() => setCurrentPage(c => c - 1)}>Prev</button>
+                <span style={{ fontSize: "0.9rem" }}>Page {currentPage} of {totalPages}</span>
+                <button disabled={currentPage === totalPages} onClick={() => setCurrentPage(c => c + 1)}>Next</button>
+              </div>
+            </section>
+          </section>
+        </main>
       </div>
     </div>
   );
