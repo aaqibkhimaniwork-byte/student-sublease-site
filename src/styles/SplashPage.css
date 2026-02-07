@@ -32,6 +32,28 @@
 
 .title-wrap {
   flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.logo-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: opacity 0.3s ease;
+}
+
+.logo-link:hover {
+  opacity: 0.8;
+}
+
+.title-icon {
+  height: 32px;
+  width: 32px;
+  object-fit: contain;
 }
 
 .app-title {
@@ -105,7 +127,7 @@
 
 .hero-section {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1.3fr 1fr;
   gap: 60px;
   align-items: center;
   max-width: 1400px;
@@ -182,6 +204,10 @@
   grid-template-columns: 1fr 1fr 1fr auto;
   gap: 16px;
   align-items: flex-end;
+}
+
+.search-form .search-input-group {
+  grid-column: span 3;
 }
 
 .search-input-group {
@@ -273,7 +299,7 @@
 
 .hero-right {
   position: absolute;
-  left: 50%;
+  left: 35%;
   right: 0;
   top: 0;
   height: 100%;
