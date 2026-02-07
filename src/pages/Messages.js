@@ -1,6 +1,9 @@
 import { useState, useEffect, useRef } from "react";
 import { supabase } from "../supabaseClient";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import home from "../assets/House Icon.webp";
+import "../styles/SplashPage.css";
+import "../styles/Messages.css";
 
 export default function Messages() {
   const [conversations, setConversations] = useState([]);
@@ -155,127 +158,159 @@ export default function Messages() {
     }
   }
 
+  function renderHeader() {
+    return (
+      <header className="splash-header">
+        <div className="header-content">
+          <div className="title-wrap">
+            <Link to="/listings" className="logo-link">
+              <img src={home} alt="House Icon" className="title-icon" />
+              <h1 className="app-title">Easy Lease</h1>
+            </Link>
+          </div>
+          <nav className="main-nav" aria-label="primary">
+            <ul>
+              <li><Link to="/">Listings</Link></li>
+              <li><Link to="/create">Create a Listing</Link></li>
+              <li><Link to="/messages">Messages</Link></li>
+            </ul>
+          </nav>
+          <div className="auth-wrap">
+            {currentUser ? (
+              <Link to="/myprofile" className="contact-button">
+                My Profile
+              </Link>
+            ) : (
+              <Link to="/login" className="contact-button">
+                Log In/ Sign up
+              </Link>
+            )}
+          </div>
+        </div>
+      </header>
+    );
+  }
+
   if (loading) {
-    return <div style={{ padding: "50px", textAlign: "center" }}>Loading chats...</div>;
+    return (
+      <div className="splash-outer messages-page">
+        <div className="splash-inner">
+          {renderHeader()}
+          <main className="splash-main">
+            <div className="messages-empty">
+              Loading chats...
+            </div>
+          </main>
+        </div>
+      </div>
+    );
   }
 
   if (!currentUser) {
     return (
-      <div style={{ padding: "100px", textAlign: "center" }}>
-        <h2>Your Inbox</h2>
-        <p>Please log in to view and send messages.</p>
-        <button onClick={() => navigate("/login")} style={sendBtnStyle}>
-          Go to Login
-        </button>
+      <div className="splash-outer messages-page">
+        <div className="splash-inner">
+          {renderHeader()}
+          <main className="splash-main">
+            <div className="messages-empty">
+              <h2>Your Inbox</h2>
+              <p>Please log in to view and send messages.</p>
+              <button onClick={() => navigate("/login")} className="messages-primary">
+                Go to Login
+              </button>
+            </div>
+          </main>
+        </div>
       </div>
     );
   }
 
   return (
-    <div style={containerStyle}>
-      <div style={sidebarStyle}>
-        <h3 style={{ padding: "0 20px" }}>Messages</h3>
+    <div className="splash-outer messages-page">
+      <div className="splash-inner">
+        {renderHeader()}
+        <main className="splash-main">
+          <section className="messages-shell">
+            <aside className="messages-sidebar">
+              <h3 className="messages-title">Messages</h3>
 
-        {conversations.length === 0 ? (
-          <p style={{ padding: "20px", color: "#888" }}>
-            No conversations yet.
-          </p>
-        ) : (
-          conversations.map((chat) => {
-            const otherUser =
-              chat.sender.id === currentUser.id ? chat.receiver : chat.sender;
+              {conversations.length === 0 ? (
+                <p className="messages-muted">No conversations yet.</p>
+              ) : (
+                conversations.map((chat) => {
+                  const otherUser =
+                    chat.sender.id === currentUser.id ? chat.receiver : chat.sender;
+                  const isActive = activeChat?.conversation_id === chat.conversation_id;
 
-            return (
-              <div
-                key={chat.conversation_id}
-                onClick={() => loadConversation(chat)}
-                style={{
-                  ...convItemStyle,
-                  background:
-                    activeChat?.conversation_id === chat.conversation_id
-                      ? "#e3f2fd"
-                      : "transparent"
-                }}
-              >
-                <img src={otherUser.profilepic_url} style={avatarStyle} />
-                <div style={{ flex: 1, overflow: "hidden" }}>
-                  <div style={{ fontWeight: "bold" }}>
-                    {otherUser.firstname} {otherUser.lastname}
+                  return (
+                    <button
+                      key={chat.conversation_id}
+                      onClick={() => loadConversation(chat)}
+                      className={`conversation-item${isActive ? " active" : ""}`}
+                      type="button"
+                    >
+                      <img src={otherUser.profilepic_url} alt="Profile" className="conversation-avatar" />
+                      <div className="conversation-body">
+                        <div className="conversation-name">
+                          {otherUser.firstname} {otherUser.lastname}
+                        </div>
+                        <div className="conversation-preview">{chat.last_message}</div>
+                      </div>
+                    </button>
+                  );
+                })
+              )}
+            </aside>
+
+            <section className="messages-chat">
+              {activeChat ? (
+                <>
+                  <div className="chat-header">
+                    <strong>
+                      Chatting with{" "}
+                      {activeChat.sender.id === currentUser.id
+                        ? activeChat.receiver.firstname
+                        : activeChat.sender.firstname}
+                    </strong>
                   </div>
-                  <div style={lastMsgStyle}>{chat.last_message}</div>
+
+                  <div className="chat-messages">
+                    {messages.map((msg) => {
+                      const isOwn = msg.sender_id === currentUser.id;
+
+                      return (
+                        <div
+                          key={msg.id}
+                          className={`message-bubble ${isOwn ? "own" : "other"}`}
+                        >
+                          {msg.content}
+                        </div>
+                      );
+                    })}
+                    <div ref={scrollRef} />
+                  </div>
+
+                  <form onSubmit={handleSendMessage} className="chat-input">
+                    <input
+                      value={newMessage}
+                      onChange={(e) => setNewMessage(e.target.value)}
+                      placeholder="Type a message..."
+                      className="chat-text"
+                    />
+                    <button type="submit" className="messages-primary">
+                      Send
+                    </button>
+                  </form>
+                </>
+              ) : (
+                <div className="messages-empty">
+                  Select a conversation to start messaging
                 </div>
-              </div>
-            );
-          })
-        )}
-      </div>
-
-      <div style={chatWindowStyle}>
-        {activeChat ? (
-          <>
-            <div style={chatHeader}>
-              <strong>
-                Chatting with{" "}
-                {activeChat.sender.id === currentUser.id
-                  ? activeChat.receiver.firstname
-                  : activeChat.sender.firstname}
-              </strong>
-            </div>
-
-            <div style={messageListStyle}>
-              {messages.map((msg) => (
-                <div
-                  key={msg.id}
-                  style={{
-                    ...messageBubbleStyle,
-                    alignSelf:
-                      msg.sender_id === currentUser.id
-                        ? "flex-end"
-                        : "flex-start",
-                    background:
-                      msg.sender_id === currentUser.id ? "#0984e3" : "#f1f0f0",
-                    color: msg.sender_id === currentUser.id ? "white" : "black"
-                  }}
-                >
-                  {msg.content}
-                </div>
-              ))}
-              <div ref={scrollRef} />
-            </div>
-
-            <form onSubmit={handleSendMessage} style={inputAreaStyle}>
-              <input
-                value={newMessage}
-                onChange={(e) => setNewMessage(e.target.value)}
-                placeholder="Type a message..."
-                style={inputStyle}
-              />
-              <button type="submit" style={sendBtnStyle}>
-                Send
-              </button>
-            </form>
-          </>
-        ) : (
-          <div style={emptyStateStyle}>
-            Select a conversation to start messaging
-          </div>
-        )}
+              )}
+            </section>
+          </section>
+        </main>
       </div>
     </div>
   );
 }
-
-/* ---------------- STYLES ---------------- */
-const containerStyle = { display: "flex", height: "calc(100vh - 80px)", maxWidth: "1200px", margin: "0 auto", border: "1px solid #ddd", background: "white" };
-const sidebarStyle = { width: "300px", borderRight: "1px solid #ddd", overflowY: "auto", background: "#f9f9f9" };
-const convItemStyle = { display: "flex", gap: "12px", padding: "15px", cursor: "pointer", borderBottom: "1px solid #eee", alignItems: "center" };
-const avatarStyle = { width: "45px", height: "45px", borderRadius: "50%", objectFit: "cover" };
-const lastMsgStyle = { fontSize: "13px", color: "#666", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" };
-const chatWindowStyle = { flex: 1, display: "flex", flexDirection: "column", background: "white" };
-const chatHeader = { padding: "15px 20px", borderBottom: "1px solid #eee" };
-const messageListStyle = { flex: 1, padding: "20px", overflowY: "auto", display: "flex", flexDirection: "column", gap: "10px" };
-const messageBubbleStyle = { maxWidth: "70%", padding: "10px 15px", borderRadius: "18px", fontSize: "14px" };
-const inputAreaStyle = { padding: "20px", borderTop: "1px solid #eee", display: "flex", gap: "10px" };
-const inputStyle = { flex: 1, padding: "12px", borderRadius: "25px", border: "1px solid #ddd", outline: "none" };
-const sendBtnStyle = { padding: "0 20px", background: "#0984e3", color: "white", border: "none", borderRadius: "25px", fontWeight: "bold", cursor: "pointer" };
-const emptyStateStyle = { flex: 1, display: "flex", justifyContent: "center", alignItems: "center", color: "#888" };

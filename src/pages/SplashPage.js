@@ -6,7 +6,7 @@ import buildingImage from "../assets/building.jpg";
 
 export default function SplashPage() {
   const [activeTab, setActiveTab] = useState("buy");
-  const [location, setLocation] = useState("Yogyakarta");
+  const [location, setLocation] = useState("");
 
   return (
     <div className="splash-outer">
