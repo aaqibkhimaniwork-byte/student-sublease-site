@@ -1,13 +1,12 @@
 import { Link } from "react-router-dom";
 import { useState } from "react";
+import home from "../assets/House Icon.webp";
 import "../styles/SplashPage.css";
 import buildingImage from "../assets/building.jpg";
 
 export default function SplashPage() {
   const [activeTab, setActiveTab] = useState("buy");
   const [location, setLocation] = useState("Yogyakarta");
-  const [propertyType, setPropertyType] = useState("32 × 10m²");
-  const [priceRange, setPriceRange] = useState("$10,000 - $25,000");
 
   return (
     <div className="splash-outer">
@@ -15,16 +14,17 @@ export default function SplashPage() {
         <header className="splash-header">
           <div className="header-content">
             <div className="title-wrap">
-              <h1 className="app-title">Easy Sublease</h1>
+              <Link to="/" className="logo-link">
+                <img src={home} alt="House Icon" className="title-icon" />
+                <h1 className="app-title">Easy Lease</h1>
+              </Link>
             </div>
 
             <nav className="main-nav" aria-label="primary">
               <ul>
-                <li><Link to="/">Townhomes</Link></li>
-                <li><Link to="/">Apartments</Link></li>
-                <li><Link to="/">Single Homes</Link></li>
-                <li><Link to="/">Condos</Link></li>
-                <li><Link to="/">Studios</Link></li>
+                <li><Link to="/">Listings</Link></li>
+                <li><Link to="/">Create a Listing</Link></li>
+                <li><Link to="/">Messages</Link></li>
               </ul>
             </nav>
 
@@ -47,23 +47,12 @@ export default function SplashPage() {
 
               <div className="search-container">
                 <div className="search-tabs">
-                  <button 
-                    className={`tab ${activeTab === "buy" ? "active" : ""}`}
-                    onClick={() => setActiveTab("buy")}
-                  >
-                    Buy
-                  </button>
-                  <button 
-                    className={`tab ${activeTab === "rent" ? "active" : ""}`}
-                    onClick={() => setActiveTab("rent")}
-                  >
-                    Rent
-                  </button>
+                  
                   <button 
                     className={`tab ${activeTab === "sell" ? "active" : ""}`}
                     onClick={() => setActiveTab("sell")}
                   >
-                    Sell
+                    Find Your University Sublease
                   </button>
                 </div>
 
@@ -75,24 +64,6 @@ export default function SplashPage() {
                       value={location}
                       onChange={(e) => setLocation(e.target.value)}
                       placeholder="Enter location"
-                    />
-                  </div>
-                  <div className="search-input-group">
-                    <label>Type</label>
-                    <input 
-                      type="text" 
-                      value={propertyType}
-                      onChange={(e) => setPropertyType(e.target.value)}
-                      placeholder="Property type"
-                    />
-                  </div>
-                  <div className="search-input-group">
-                    <label>Average Price</label>
-                    <input 
-                      type="text" 
-                      value={priceRange}
-                      onChange={(e) => setPriceRange(e.target.value)}
-                      placeholder="Price range"
                     />
                   </div>
                   <button className="search-button">Search</button>
