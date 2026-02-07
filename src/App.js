@@ -8,6 +8,9 @@ import Signup from "./pages/Signup";
 import Login from "./pages/Login";
 import Home from "./pages/Home";
 import Messages from "./pages/Messages";
+import MyProfile from "./pages/MyProfile";
+import PublicProfile from "./pages/PublicProfile";
+import PublicListing from "./pages/PublicListing";
 
 export default function App() {
   const [listings, setListings] = useState([
@@ -32,6 +35,9 @@ export default function App() {
         <Route path="/create" element={<CreateListing addListing={addListing} />} />
         <Route path="/listings" element={<Listings listings={listings} />} />
         <Route path="/messages" element={<Messages />} />
+        <Route path="/myprofile" element={<MyProfile />} />
+        <Route path="/profile/:id" element={<PublicProfile />} />
+        <Route path="/listing/:id" element={<PublicListing />} />
       </Routes>
     </BrowserRouter>
   );
@@ -45,9 +51,10 @@ function TopBarIfNotSplash() {
     <nav style={{ padding: "15px", background: "#eee" }}>
       <Link to="/signup" style={{ marginRight: "15px" }}>Signup</Link>
       <Link to="/login" style={{ marginRight: "15px" }}>Login</Link>
-      <Link to="/home" style={{ marginRight: "15px" }}>Home</Link>
+      <Link to="/" style={{ marginRight: "15px" }}>Home</Link>
       <Link to="/create" style={{ marginRight: "15px" }}>Create Listing</Link>
       <Link to="/listings" style={{ marginRight: "15px" }}>Listings</Link>
+      <Link to="/myprofile" style={{ marginRight: "15px" }}>My Profile</Link>
       <Link to="/messages">Messages</Link>
     </nav>
   );
