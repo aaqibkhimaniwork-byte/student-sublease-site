@@ -29,6 +29,10 @@ export default function Listings() {
     fetchData();
   }, []);
 
+  // 🔥 FIXED: Remove the broken fetch call completely
+  // ❌ This was causing the "Failed to fetch" error
+  // useEffect(() => { ... })  <-- REMOVED
+
   async function fetchData() {
     setLoading(true);
     const { data: { user: currentUser } } = await supabase.auth.getUser();
@@ -45,9 +49,9 @@ export default function Listings() {
           profilepic_url
         )
       `);
-      
+
     setDbListings(listingsData || []);
-    
+
     if (currentUser) {
       const { data: favData } = await supabase
         .from("favorites")
@@ -58,29 +62,9 @@ export default function Listings() {
     setLoading(false);
   }
 
-  useEffect(() => {
-  async function fetchListings() {
-    setLoading(true);
-
-    const query = filters.university
-      ? `?university=${encodeURIComponent(filters.university)}`
-      : "";
-
-    const res = await fetch(`http://localhost:5000/api/listings${query}`);
-    const data = await res.json();
-
-    setDbListings(data);
-    setLoading(false);
-  }
-
-  fetchListings();
-}, [filters.university]);
-
-
-
   // Toggle Favorite logic
   const toggleFavorite = async (e, listingId) => {
-    e.stopPropagation(); 
+    e.stopPropagation();
     if (!user) return alert("Please log in to favorite listings.");
 
     const isFavorited = userFavorites.includes(listingId);
@@ -109,7 +93,7 @@ export default function Listings() {
       const matchZip = !filters.zip_code || listing.zip_code.includes(filters.zip_code);
       const matchMoveIn = !filters.latestMoveIn || new Date(listing.lease_start) <= new Date(filters.latestMoveIn);
       const matchLeaseEnd = !filters.earliestLeaseEnd || new Date(listing.lease_end) >= new Date(filters.earliestLeaseEnd);
-      
+
       const matchRent = listing.rent <= preferences.maxRent;
       const matchSqft = listing.sq_ft >= preferences.minSqft;
 
@@ -129,21 +113,21 @@ export default function Listings() {
       <div style={filterPanelStyle}>
         <div style={filterColumnStyle}>
           <h4>Search Area</h4>
-<input
-  placeholder="University"
-  value={uniSearch}           // bind to uniSearch
-  onChange={(e) => setUniSearch(e.target.value)}  // typing only updates uniSearch
-  style={inputStyle}
-/>
-<button
-  onClick={() => {
-    setFilters({ ...filters, university: uniSearch }); // trigger backend fetch
-    setCurrentPage(1);
-  }}
-  style={{ marginTop: "5px" }}
->
-  Search
-</button>
+          <input
+            placeholder="University"
+            value={uniSearch}
+            onChange={(e) => setUniSearch(e.target.value)}
+            style={inputStyle}
+          />
+          <button
+            onClick={() => {
+              setFilters({ ...filters, university: uniSearch });
+              setCurrentPage(1);
+            }}
+            style={{ marginTop: "5px" }}
+          >
+            Search
+          </button>
           <input placeholder="City" onChange={(e) => {setFilters({...filters, city: e.target.value}); setCurrentPage(1);}} style={inputStyle} />
         </div>
         <div style={filterColumnStyle}>
