@@ -5,15 +5,18 @@ export default function Signup() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [firstname, setFirstname] = useState("");
+  const [lastname, setLastname] = useState("");
+  const [university, setUniversity] = useState("");
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
 
   async function handleSignup(e) {
     e.preventDefault();
     setLoading(true);
+    setMessage("");
 
     if (!email.endsWith(".edu")) {
-      setMessage("❌ Please use a valid college (.edu) email address.");
+      setMessage("❌ Please use a valid .edu email address.");
       setLoading(false);
       return;
     }
@@ -22,38 +25,64 @@ export default function Signup() {
       email: email,
       password: password,
       options: {
-        data: { firstname: firstname }
+        data: {
+          firstname: firstname,
+          lastname: lastname,
+          university: university,
+        },
       },
     });
 
     if (error) {
       setMessage(`❌ ${error.message}`);
     } else {
-      setMessage("✅ Success! Check your email.");
+      setMessage("✅ Success! Check your email for a link.");
     }
     setLoading(false);
   }
+
+  // This ensures they stay vertical
+  const inputStyle = { 
+    padding: "10px", 
+    width: "300px", 
+    display: "block", 
+    marginBottom: "10px" 
+  };
 
   return (
     <div style={{ padding: "30px" }}>
       <h2>Student Signup</h2>
       <p>Only verified college students can join.</p>
 
-      <form onSubmit={handleSignup} style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+      <form onSubmit={handleSignup}>
         <input
           placeholder="First Name"
           value={firstname}
           onChange={(e) => setFirstname(e.target.value)}
           required
-          style={{ padding: "10px", width: "150px" }}
+          style={inputStyle}
+        />
+        <input
+          placeholder="Last Name"
+          value={lastname}
+          onChange={(e) => setLastname(e.target.value)}
+          required
+          style={inputStyle}
+        />
+        <input
+          placeholder="University (e.g. UGA)"
+          value={university}
+          onChange={(e) => setUniversity(e.target.value)}
+          required
+          style={inputStyle}
         />
         <input
           type="email"
-          placeholder="Enter your .edu email"
+          placeholder="Email (.edu)"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
-          style={{ padding: "10px", width: "250px" }}
+          style={inputStyle}
         />
         <input
           type="password"
@@ -61,15 +90,19 @@ export default function Signup() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
-          style={{ padding: "10px", width: "150px" }}
+          style={inputStyle}
         />
 
-        <button style={{ padding: "10px" }} disabled={loading}>
-          {loading ? "..." : "Sign Up"}
+        <button 
+          type="submit" 
+          disabled={loading} 
+          style={{ padding: "10px", width: "324px", cursor: "pointer" }}
+        >
+          {loading ? "Registering..." : "Sign Up"}
         </button>
       </form>
 
-      <p style={{ marginTop: "15px" }}>{message}</p>
+      {message && <p style={{ marginTop: "15px" }}>{message}</p>}
     </div>
   );
 }
