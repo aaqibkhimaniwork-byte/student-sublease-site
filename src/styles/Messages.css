@@ -225,6 +225,17 @@
   gap: 12px;
 }
 
+.messages-auth-box {
+  width: 100%;
+  max-width: 1100px;
+  min-height: calc(100vh - 140px);
+  background: #ffffff;
+  border-radius: 18px;
+  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.35);
+  padding: 32px;
+  margin: 0 auto;
+}
+
 
 /* ============================= */
 /* MOBILE */

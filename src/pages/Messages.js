@@ -2,7 +2,6 @@ import { useState, useEffect, useRef } from "react";
 import { supabase } from "../supabaseClient";
 import { Link, useNavigate } from "react-router-dom";
 import home from "../assets/House Icon.webp";
-import "../styles/SplashPage.css";
 import "../styles/Messages.css";
 
 export default function Messages() {
@@ -185,6 +184,30 @@ export default function Messages() {
           {renderHeader()}
           <main className="splash-main">
             <div className="messages-empty">Loading chats...</div>
+          </main>
+        </div>
+      </div>
+    );
+  }
+
+  if (!currentUser) {
+    return (
+      <div className="splash-outer messages-page">
+        <div className="splash-inner">
+          {renderHeader()}
+          <main className="splash-main">
+            <div className="messages-auth-box">
+              <div className="auth-form create-form" style={{ textAlign: "center" }}>
+                <h2>Access Restricted</h2>
+                <p>You need to be logged in to view messages.</p>
+                <button onClick={() => navigate("/login")} className="create-primary">
+                  Log In Now
+                </button>
+                <p className="create-muted">
+                  Don't have an account? <Link to="/signup">Sign Up</Link>
+                </p>
+              </div>
+            </div>
           </main>
         </div>
       </div>
