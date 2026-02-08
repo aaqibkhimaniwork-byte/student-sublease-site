@@ -1,6 +1,10 @@
 import { useState } from "react";
 import { supabase } from "../supabaseClient"; 
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import home from "../assets/House Icon.webp";
+import buildingImage from "../assets/building.jpg";
+import "../styles/SplashPage.css";
+import "../styles/Signup.css";
 
 export default function Signup() {
   const [email, setEmail] = useState("");
@@ -52,94 +56,108 @@ export default function Signup() {
     setLoading(false);
   }
 
-  const inputStyle = { 
-    padding: "10px", 
-    width: "300px", 
-    display: "block", 
-    marginBottom: "10px" 
-  };
+  function renderHeader() {
+    return (
+      <header className="splash-header">
+        <div className="header-content">
+          <div className="title-wrap">
+            <Link to="/" className="logo-link">
+              <img src={home} alt="House Icon" className="title-icon" />
+              <h1 className="app-title">Easy Lease</h1>
+            </Link>
+          </div>
+          <nav className="main-nav" aria-label="primary">
+            <ul>
+              <li><Link to="/listings">Listings</Link></li>
+              <li><Link to="/create">Create a Listing</Link></li>
+              <li><Link to="/messages">Messages</Link></li>
+            </ul>
+          </nav>
+          <div className="auth-wrap">
+            <Link to="/login" className="contact-button">
+              Log In/ Sign up
+            </Link>
+          </div>
+        </div>
+      </header>
+    );
+  }
 
   return (
-    <div style={{ padding: "30px", fontFamily: "sans-serif" }}>
-      <h2>Student Signup</h2>
-      <p>Only verified college students can join.</p>
+    <div className="splash-outer signup-page">
+      <div className="splash-inner">
+        {renderHeader()}
+        <main className="splash-main">
+          <div className="signup-backdrop" aria-hidden="true">
+            <img src={buildingImage} alt="" />
+          </div>
+          <section className="signup-shell">
+            <div className="signup-content">
+              <h2 className="signup-title">Student Signup</h2>
+              <p className="signup-subtitle">Only verified college students can join.</p>
 
-      <form onSubmit={handleSignup}>
-        <input
-          placeholder="First Name"
-          value={firstname}
-          onChange={(e) => setFirstname(e.target.value)}
-          required
-          style={inputStyle}
-        />
-        <input
-          placeholder="Last Name"
-          value={lastname}
-          onChange={(e) => setLastname(e.target.value)}
-          required
-          style={inputStyle}
-        />
-        <input
-          placeholder="University (e.g. UGA)"
-          value={university}
-          onChange={(e) => setUniversity(e.target.value)}
-          required
-          style={inputStyle}
-        />
-        <input
-          type="email"
-          placeholder="Email (.edu)"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-          style={inputStyle}
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-          style={inputStyle}
-        />
-        {/* NEW: Confirm Password Input */}
-        <input
-          type="password"
-          placeholder="Confirm Password"
-          value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
-          required
-          style={inputStyle}
-        />
+              <form onSubmit={handleSignup} className="signup-form">
+                <input
+                  placeholder="First Name"
+                  value={firstname}
+                  onChange={(e) => setFirstname(e.target.value)}
+                  required
+                />
+                <input
+                  placeholder="Last Name"
+                  value={lastname}
+                  onChange={(e) => setLastname(e.target.value)}
+                  required
+                />
+                <input
+                  placeholder="University (e.g. UGA)"
+                  value={university}
+                  onChange={(e) => setUniversity(e.target.value)}
+                  required
+                />
+                <input
+                  type="email"
+                  placeholder="Email (.edu)"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                />
+                <input
+                  type="password"
+                  placeholder="Password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                />
+                <input
+                  type="password"
+                  placeholder="Confirm Password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  required
+                />
 
-        <button 
-          type="submit" 
-          disabled={loading} 
-          style={{ 
-            padding: "10px", 
-            width: "324px", 
-            cursor: "pointer",
-            backgroundColor: "#0984e3",
-            color: "white",
-            border: "none",
-            borderRadius: "4px",
-            fontWeight: "bold"
-          }}
-        >
-          {loading ? "Registering..." : "Sign Up"}
-        </button>
-      </form>
+                <button 
+                  type="submit" 
+                  disabled={loading} 
+                  className="signup-primary"
+                >
+                  {loading ? "Registering..." : "Sign Up"}
+                </button>
+                <p className="signup-login">
+                  Already have an account? <Link to="/login">Log in</Link>
+                </p>
+              </form>
 
-      {message && (
-        <div style={{ 
-          marginTop: "15px", 
-          maxWidth: "324px", 
-          lineHeight: "1.4",
-          color: message.includes("✅") ? "#2d3436" : "#d63031" 
-        }}>
-          {message}
-        </div>
-      )}
+              {message && (
+                <div className={`signup-message ${message.includes("✅") ? "success" : "error"}`}>
+                  {message}
+                </div>
+              )}
+            </div>
+          </section>
+        </main>
+      </div>
     </div>
   );
 }

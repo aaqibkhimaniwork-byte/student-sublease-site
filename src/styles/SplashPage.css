@@ -223,7 +223,8 @@
 }
 
 .search-input-group input {
-  padding: 12px 16px;
+  height: 48px;
+  padding: 0 16px;
   border: 1px solid #e0e0e0;
   border-radius: 8px;
   font-size: 14px;
@@ -240,11 +241,12 @@
 }
 
 .search-button {
-  padding: 12px 32px;
+  height: 48px;
+  padding: 0 40px;
   background: linear-gradient(135deg, #4565ff 0%, #3d58e6 100%);
   border: none;
   border-radius: 8px;
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 600;
   color: #fff;
   cursor: pointer;
@@ -453,6 +455,14 @@
   font-size: 18px;
 }
 
+.login-page .search-input-group {
+  margin-bottom: 16px;
+}
+
+.login-page .search-button {
+  margin-top: 16px;
+}
+
 .login-page .hero-right {
   position: absolute;
   top: 50%;
@@ -489,3 +499,25 @@
   position: relative;
   z-index: 40;
 }
+
+.profile-button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  color: #2d3436;
+  font-weight: 600;
+}
+
+.profile-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #0984e3;
+}
+
+.profile-name {
+  font-size: 0.9rem;
+}
+

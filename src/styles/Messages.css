@@ -1,0 +1,253 @@
+/* ============================= */
+/* PAGE LOCK */
+/* ============================= */
+
+.messages-page {
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* Override splash layout ONLY for messages page */
+.messages-page .splash-inner {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.messages-page .splash-main {
+  flex: 1;
+  padding: 20px;              /* controlled padding */
+  display: flex;
+  align-items: stretch;       /* VERY IMPORTANT */
+  justify-content: center;
+  overflow: hidden;           /* prevent page scroll */
+}
+
+
+/* ============================= */
+/* MAIN SHELL */
+/* ============================= */
+
+.messages-shell {
+  width: 100%;
+  max-width: 1200px;
+  height: 100%;
+  background: #ffffff;
+  border-radius: 18px;
+  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.25);
+  overflow: hidden;
+
+  display: grid;
+  grid-template-columns: 320px 1fr;
+}
+
+
+/* ============================= */
+/* SIDEBAR */
+/* ============================= */
+
+.messages-sidebar {
+  background: #f7f8fb;
+  border-right: 1px solid #e8ecf3;
+
+  display: flex;
+  flex-direction: column;
+
+  overflow-y: auto;   /* independent scroll */
+}
+
+.messages-title {
+  padding: 20px;
+  margin: 0;
+  font-size: 18px;
+  color: #1b2540;
+}
+
+.messages-muted {
+  padding: 20px;
+  color: #7a859b;
+}
+
+.conversation-item {
+  display: flex;
+  gap: 12px;
+  padding: 14px 18px;
+  border: none;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+  border-bottom: 1px solid #e9edf5;
+  transition: background 0.2s ease;
+}
+
+.conversation-item:hover {
+  background: rgba(69, 101, 255, 0.08);
+}
+
+.conversation-item.active {
+  background: rgba(69, 101, 255, 0.12);
+}
+
+.conversation-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.conversation-body {
+  flex: 1;
+  overflow: hidden;
+}
+
+.conversation-name {
+  font-weight: 600;
+  color: #1b2540;
+}
+
+.conversation-preview {
+  font-size: 13px;
+  color: #6a7388;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+
+/* ============================= */
+/* CHAT SECTION */
+/* ============================= */
+
+.messages-chat {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;   /* prevents page expansion */
+  background: #ffffff;
+}
+
+.chat-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid #eef1f6;
+  color: #1b2540;
+  flex-shrink: 0;
+}
+
+.chat-messages {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;     /* THIS is the scroll area */
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  background: linear-gradient(
+    180deg,
+    #f8f9fc 0%,
+    #ffffff 60%
+  );
+}
+
+.message-bubble {
+  max-width: 70%;
+  padding: 10px 14px;
+  border-radius: 16px;
+  font-size: 14px;
+  line-height: 1.4;
+  word-wrap: break-word;
+}
+
+.message-bubble.own {
+  align-self: flex-end;
+  background: linear-gradient(
+    135deg,
+    #4565ff 0%,
+    #3d58e6 100%
+  );
+  color: #ffffff;
+}
+
+.message-bubble.other {
+  align-self: flex-start;
+  background: #eef1f6;
+  color: #1b2540;
+}
+
+
+/* ============================= */
+/* INPUT */
+/* ============================= */
+
+.chat-input {
+  padding: 16px 20px;
+  border-top: 1px solid #eef1f6;
+  display: flex;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.chat-text {
+  flex: 1;
+  padding: 12px 14px;
+  border-radius: 999px;
+  border: 1px solid #dde2ee;
+  outline: none;
+  font-size: 14px;
+}
+
+.messages-primary,
+.search-button {
+  padding: 0 22px;
+  background: linear-gradient(
+    135deg,
+    #4565ff 0%,
+    #3d58e6 100%
+  );
+  color: #fff;
+  border: none;
+  border-radius: 999px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+
+/* ============================= */
+/* EMPTY STATE */
+/* ============================= */
+
+.messages-empty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: #6a7388;
+  gap: 12px;
+}
+
+.messages-auth-box {
+  width: 100%;
+  max-width: 1100px;
+  min-height: calc(100vh - 140px);
+  background: #ffffff;
+  border-radius: 18px;
+  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.35);
+  padding: 32px;
+  margin: 0 auto;
+}
+
+
+/* ============================= */
+/* MOBILE */
+/* ============================= */
+
+@media (max-width: 900px) {
+  .messages-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .messages-sidebar {
+    max-height: 260px;
+    overflow-y: auto;
+  }
+}

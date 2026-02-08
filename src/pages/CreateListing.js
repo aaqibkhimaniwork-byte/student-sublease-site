@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../supabaseClient";
 import { useNavigate, Link } from "react-router-dom";
+import home from "../assets/House Icon.webp";
+import "../styles/CreateListing.css";
 
 export default function CreateListing() {
   const navigate = useNavigate();
@@ -168,34 +170,81 @@ export default function CreateListing() {
     }
   }
 
-  // 1. Wait for auth check to finish
-  if (!authChecked) {
-    return <div className="auth-container"><p>Loading...</p></div>;
+  function renderHeader() {
+    return (
+      <header className="splash-header">
+        <div className="header-content">
+          <div className="title-wrap">
+            <Link to="/" className="logo-link">
+              <img src={home} alt="House Icon" className="title-icon" />
+              <h1 className="app-title">Easy Lease</h1>
+            </Link>
+          </div>
+          <nav className="main-nav" aria-label="primary">
+            <ul>
+              <li><Link to="/listings">Listings</Link></li>
+              <li><Link to="/create">Create a Listing</Link></li>
+              <li><Link to="/messages">Messages</Link></li>
+            </ul>
+          </nav>
+          <div className="auth-wrap">
+            {user ? (
+              <Link to="/myprofile" className="contact-button">
+                My Profile
+              </Link>
+            ) : (
+              <Link to="/login" className="contact-button">
+                Log In/ Sign up
+              </Link>
+            )}
+          </div>
+        </div>
+      </header>
+    );
   }
 
-  // 2. If NOT logged in, show the restricted message
-  if (!user) {
+  function renderShell(content) {
     return (
-      <div className="auth-container">
-        <div className="auth-form" style={{ textAlign: "center" }}>
-          <h2>Access Restricted</h2>
-          <p>You need to be logged in to create a listing.</p>
-          <button onClick={() => navigate("/login")} style={{ marginTop: "20px" }}>
-            Log In Now
-          </button>
-          <p style={{ marginTop: "15px", fontSize: "0.9rem" }}>
-            Don't have an account? <Link to="/signup">Sign Up</Link>
-          </p>
+      <div className="splash-outer create-page">
+        <div className="splash-inner">
+          {renderHeader()}
+          <main className="splash-main">
+            <section className="create-shell">
+              <div className="create-content">
+                {content}
+              </div>
+            </section>
+          </main>
         </div>
       </div>
     );
   }
 
+  // 1. Wait for auth check to finish
+  if (!authChecked) {
+    return renderShell(<div className="create-empty">Loading...</div>);
+  }
+
+  // 2. If NOT logged in, show the restricted message
+  if (!user) {
+    return renderShell(
+      <div className="auth-form create-form" style={{ textAlign: "center" }}>
+        <h2>Access Restricted</h2>
+        <p>You need to be logged in to create a listing.</p>
+        <button onClick={() => navigate("/login")} className="create-primary">
+          Log In Now
+        </button>
+        <p className="create-muted">
+          Don't have an account? <Link to="/signup">Sign Up</Link>
+        </p>
+      </div>
+    );
+  }
+
   // 3. If logged in, show the actual form
-  return (
-    <div className="auth-container">
-      <form className="auth-form" onSubmit={handleSubmit}>
-        <h2>Create a New Listing</h2>
+  return renderShell(
+    <form className="auth-form create-form" onSubmit={handleSubmit}>
+      <h2>Create a New Listing</h2>
         
         <section>
           <p><strong>Property Basics</strong></p>
@@ -285,10 +334,9 @@ export default function CreateListing() {
           <p>{images.length} of 5 images selected</p>
         </section>
 
-        <button type="submit" disabled={loading}>
-          {loading ? "Saving Listing..." : "Add Listing"}
-        </button>
-      </form>
-    </div>
+      <button type="submit" disabled={loading} className="create-primary">
+        {loading ? "Saving Listing..." : "Add Listing"}
+      </button>
+    </form>
   );
 }
