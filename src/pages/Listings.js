@@ -525,7 +525,7 @@ export default function Listings() {
                             </p>
 
                             <p>
-                              <strong>Address:</strong> {listing.street_address},{" "}
+                              <strong>Address:</strong> {listing.street_address}, {listing.city}, {listing.state} {" "}
                               {listing.zip_code}
                             </p>
 

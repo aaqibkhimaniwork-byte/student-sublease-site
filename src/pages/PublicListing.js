@@ -97,6 +97,7 @@ export default function PublicListing() {
     }
   };
 
+    
 
   function renderHeader() {
     return (
@@ -202,6 +203,8 @@ export default function PublicListing() {
             <h3>Lease Details</h3>
             <p><strong>Universities:</strong> {listing.universities?.join(", ")}</p>
             <p><strong>Timeline:</strong> {listing.lease_start} to {listing.lease_end}</p>
+            <p><strong>Address:</strong> {listing.street_address}, {listing.city}, {listing.state} {" "}
+              {listing.zip_code}</p>
           </div>
         </div>
 
