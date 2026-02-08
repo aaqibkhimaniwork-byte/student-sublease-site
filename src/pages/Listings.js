@@ -330,7 +330,7 @@ export default function Listings() {
                       style={creatorBadgeStyle} 
                       onClick={(e) => {
                         e.stopPropagation();
-                        navigate(`/MyProfile/${listing.user_id}`);
+                        navigate(`/profile/${listing.user_id}`);
                       }}
                     >
                       <img 
