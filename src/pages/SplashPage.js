@@ -6,13 +6,6 @@ import buildingImage from "../assets/building.jpg";
 import { supabase } from "../supabaseClient";
 
 export default function SplashPage() {
-  const [activeTab, setActiveTab] = useState("buy");
-  const [location, setLocation] = useState("");
-
-  // Dropdown universities
-  const [universities, setUniversities] = useState([]);
-  const [showSuggestions, setShowSuggestions] = useState(false);
-
   // Auth & Profile
   const [user, setUser] = useState(null);
   const [profile, setProfile] = useState(null);
@@ -52,33 +45,6 @@ export default function SplashPage() {
       authListener.subscription.unsubscribe();
     };
   }, []);
-
-  // Fetch universities for dropdown
-  useEffect(() => {
-    async function fetchUniversities() {
-      try {
-        const res = await fetch("http://localhost:5000/api/universities");
-        const data = await res.json();
-
-        // Store only university names
-        setUniversities(data.map((u) => u.name));
-      } catch (err) {
-        console.error("Failed to fetch universities:", err);
-      }
-    }
-
-    fetchUniversities();
-  }, []);
-
-  // Search button behavior
-  function handleSearchClick() {
-    if (!user) {
-      alert("You need to log in to view listings.");
-      return;
-    }
-
-    alert("Search feature coming sooon!");
-  }
 
   return (
     <div className="splash-outer">
@@ -146,88 +112,10 @@ export default function SplashPage() {
                 locations.
               </p>
 
-              <div className="search-container">
-                <div className="search-tabs">
-                  <button
-                    className={`tab ${activeTab === "sell" ? "active" : ""}`}
-                    onClick={() => setActiveTab("sell")}
-                  >
-                    Find Your University Sublease
-                  </button>
-                </div>
-
-                <div className="search-form">
-                  {/* UNIVERSITY INPUT WITH DROPDOWN */}
-                  <div
-                    className="search-input-group"
-                    style={{ position: "relative" }}
-                  >
-                    <label>Enter University</label>
-
-                    <input
-                      type="text"
-                      value={location}
-                      onChange={(e) => {
-                        setLocation(e.target.value);
-                        setShowSuggestions(true);
-                      }}
-                      onFocus={() => setShowSuggestions(true)}
-                      onBlur={() =>
-                        setTimeout(() => setShowSuggestions(false), 200)
-                      }
-                      placeholder="e.g., University of Georgia"
-                    />
-
-                    {/* DROPDOWN */}
-                    {showSuggestions && location && (
-                      <ul
-                        style={{
-                          position: "absolute",
-                          top: "70px",
-                          left: 0,
-                          right: 0,
-                          background: "white",
-                          border: "1px solid #ddd",
-                          borderRadius: "6px",
-                          maxHeight: "150px",
-                          overflowY: "auto",
-                          zIndex: 20,
-                          listStyle: "none",
-                          padding: 0,
-                          margin: 0,
-                        }}
-                      >
-                        {universities
-                          .filter((u) =>
-                            u.toLowerCase().includes(location.toLowerCase())
-                          )
-                          .slice(0, 6)
-                          .map((u, i) => (
-                            <li
-                              key={i}
-                              style={{
-                                padding: "10px",
-                                cursor: "pointer",
-                                borderBottom: "1px solid #eee",
-                              }}
-                              onClick={() => {
-                                setLocation(u);
-                                setShowSuggestions(false);
-                              }}
-                            >
-                              {u}
-                            </li>
-                          ))}
-                      </ul>
-                    )}
-                  </div>
-
-                  {/* SEARCH BUTTON */}
-                  <button className="search-button" onClick={handleSearchClick}>
-                    Search
-                  </button>
-                </div>
+              <div className="cta-buttons" aria-label="Get started">
+                <Link to="/listings" className="cta-button primary">Get Started</Link>
               </div>
+
             </div>
 
             {/* RIGHT IMAGE */}
