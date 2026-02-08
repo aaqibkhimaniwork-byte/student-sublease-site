@@ -47,6 +47,21 @@
   font-size: 14px;
 }
 
+.listing-section {
+  background: #ffffff;
+  border: 1px solid #e6eaf2;
+  border-radius: 12px;
+  padding: 16px 18px;
+  margin: 14px 0;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
+}
+
+.listing-section h4 {
+  margin: 0 0 10px 0;
+  font-size: 16px;
+  color: #1b2540;
+}
+
 @media (max-width: 1024px) {
   .listings-shell {
     grid-template-columns: 1fr;

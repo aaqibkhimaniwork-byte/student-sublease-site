@@ -162,7 +162,7 @@ export default function CreateListing() {
       if (insertError) throw insertError;
 
       alert("Listing posted successfully!");
-      navigate("/");
+      navigate("/MyProfile");
     } catch (err) {
       alert(err.message);
     } finally {
