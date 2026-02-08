@@ -1,14 +1,11 @@
 import { Link } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import home from "../assets/House Icon.webp";
 import "../styles/SplashPage.css";
 import buildingImage from "../assets/building.jpg";
 import { supabase } from "../supabaseClient";
 
 export default function SplashPage() {
-  const [activeTab, setActiveTab] = useState("buy");
-  const [location, setLocation] = useState("");
-
   // Auth & Profile
   const [user, setUser] = useState(null);
   const [profile, setProfile] = useState(null);
@@ -106,28 +103,8 @@ export default function SplashPage() {
               </h2>
               <p className="hero-subtitle">A platform for students to find verified subleases in their desired locations.</p>
 
-              <div className="search-container">
-                <div className="search-tabs">
-                  <button 
-                    className={`tab ${activeTab === "sell" ? "active" : ""}`}
-                    onClick={() => setActiveTab("sell")}
-                  >
-                    Find Your University Sublease
-                  </button>
-                </div>
-
-                <div className="search-form">
-                  <div className="search-input-group">
-                    <label>Enter University</label>
-                    <input 
-                      type="text" 
-                      value={location}
-                      onChange={(e) => setLocation(e.target.value)}
-                      placeholder="e.g., University of Georgia"
-                    />
-                  </div>
-                  <button className="search-button">Search</button>
-                </div>
+              <div className="cta-buttons" aria-label="Get started">
+                <Link to="/signup" className="cta-button primary">Get Started</Link>
               </div>
             </div>
 
