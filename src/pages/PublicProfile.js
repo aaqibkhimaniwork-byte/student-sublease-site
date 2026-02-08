@@ -1,12 +1,16 @@
 import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { supabase } from "../supabaseClient";
+import home from "../assets/House Icon.webp";
+import "../styles/SplashPage.css";
+import "../styles/PublicProfile.css";
 
 export default function PublicProfile() {
   const { id } = useParams();
   const [profile, setProfile] = useState(null);
   const [listings, setListings] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState(null);
   const navigate = useNavigate();
 
   const defaultAvatar = "https://t4.ftcdn.net/jpg/00/64/67/63/360_F_64676383_LdbmhiNM6Ypzb3FM4PPuFP9rHe7ri8Ju.jpg";
@@ -35,96 +39,141 @@ export default function PublicProfile() {
     fetchPublicData();
   }, [id]);
 
-  if (loading) return <div style={containerStyle}>Loading profile details...</div>;
-  if (!profile) return <div style={containerStyle}>User not found.</div>;
+  useEffect(() => {
+    async function fetchUser() {
+      const { data: { user: currentUser } } = await supabase.auth.getUser();
+      setUser(currentUser);
+    }
 
-  return (
-    <div style={containerStyle}>
+    fetchUser();
+  }, []);
+
+  function renderHeader() {
+    return (
+      <header className="splash-header">
+        <div className="header-content">
+          <div className="title-wrap">
+            <Link to="/" className="logo-link">
+              <img src={home} alt="House Icon" className="title-icon" />
+              <h1 className="app-title">Easy Lease</h1>
+            </Link>
+          </div>
+          <nav className="main-nav" aria-label="primary">
+            <ul>
+              <li><Link to="/listings">Listings</Link></li>
+              <li><Link to="/create">Create a Listing</Link></li>
+              <li><Link to="/messages">Messages</Link></li>
+            </ul>
+          </nav>
+          <div className="auth-wrap">
+            {user ? (
+              <Link to="/myprofile" className="contact-button">
+                My Profile
+              </Link>
+            ) : (
+              <Link to="/login" className="contact-button">
+                Log In/ Sign up
+              </Link>
+            )}
+          </div>
+        </div>
+      </header>
+    );
+  }
+
+  function renderShell(content) {
+    return (
+      <div className="splash-outer public-profile-screen">
+        <div className="splash-inner">
+          {renderHeader()}
+          <main className="splash-main">
+            <section className="public-profile-shell">
+              {content}
+            </section>
+          </main>
+        </div>
+      </div>
+    );
+  }
+
+  if (loading) {
+    return renderShell(
+      <div className="public-profile-status">Loading profile details...</div>
+    );
+  }
+
+  if (!profile) {
+    return renderShell(
+      <div className="public-profile-status">User not found.</div>
+    );
+  }
+
+  return renderShell(
+    <div className="public-profile-page">
       {/* USER DETAILS SECTION */}
-      <section style={sectionStyle}>
-        <h2 style={{ marginBottom: "25px" }}>User Details</h2>
-        <div style={{ display: "flex", gap: "40px", flexWrap: "wrap", alignItems: "flex-start" }}>
-          
-          <div style={{ textAlign: "center" }}>
-            <img 
-              src={profile.profilepic_url || defaultAvatar} 
-              style={avatarStyle} 
-              alt="Profile" 
+      <section className="public-profile-section">
+        <h2 className="public-profile-title">User Details</h2>
+        <div className="public-profile-details">
+          <div className="public-profile-avatar-wrap">
+            <img
+              src={profile.profilepic_url || defaultAvatar}
+              className="public-profile-avatar"
+              alt="Profile"
             />
           </div>
 
-          <div style={{ flex: 1, minWidth: "300px" }}>
-            <div style={detailItem}>
-              <label style={labelStyle}>NAME</label>
-              <div style={infoBox}>{profile.firstname} {profile.lastname}</div>
-            </div>
-            
-            <div style={detailItem}>
-              <label style={labelStyle}>UNIVERSITY</label>
-              <div style={infoBox}>{profile.university}</div>
+          <div className="public-profile-info">
+            <div className="public-profile-item">
+              <label className="public-profile-label">NAME</label>
+              <div className="public-profile-value">{profile.firstname} {profile.lastname}</div>
             </div>
 
-            <div style={detailItem}>
-              <label style={labelStyle}>CONTACT EMAIL</label>
-              <div style={infoBox}>{profile.email}</div>
+            <div className="public-profile-item">
+              <label className="public-profile-label">UNIVERSITY</label>
+              <div className="public-profile-value">{profile.university}</div>
+            </div>
+
+            <div className="public-profile-item">
+              <label className="public-profile-label">CONTACT EMAIL</label>
+              <div className="public-profile-value">{profile.email}</div>
             </div>
           </div>
         </div>
       </section>
 
       {/* ACTIVE LISTINGS SECTION */}
-      <section>
-        <h3 style={{ marginBottom: "20px" }}>Active Postings ({listings.length})</h3>
+      <section className="public-profile-section">
+        <h3 className="public-profile-subtitle">Active Postings ({listings.length})</h3>
         {listings.length > 0 ? (
-          <div style={gridStyle}>
+          <div className="public-profile-grid">
             {listings.map((listing) => (
               <div 
                 key={listing.id} 
-                style={listingCardStyle} 
+                className="public-profile-card"
                 /* REDIRECT FIXED HERE */
                 onClick={() => navigate(`/listing/${listing.id}`)}
               >
-                <img 
-                  src={listing.image_urls?.[0] || "https://via.placeholder.com/300x200"} 
-                  style={listingImgStyle} 
-                  alt={listing.title} 
+                <img
+                  src={listing.image_urls?.[0] || "https://via.placeholder.com/300x200"}
+                  className="public-profile-card-image"
+                  alt={listing.title}
                 />
-                <div style={{ padding: "15px" }}>
-                  <h4 style={{ margin: "0 0 5px 0" }}>{listing.title}</h4>
-                  <p style={{ color: "#0984e3", fontWeight: "bold", margin: 0 }}>${listing.rent}/mo</p>
-                  <p style={{ fontSize: "0.8rem", color: "#666", marginTop: "5px" }}>{listing.city}, {listing.state}</p>
+                <div className="public-profile-card-body">
+                  <h4 className="public-profile-card-title">{listing.title}</h4>
+                  <p className="public-profile-card-rent">${listing.rent}/mo</p>
+                  <p className="public-profile-card-location">{listing.city}, {listing.state}</p>
                 </div>
               </div>
             ))}
           </div>
         ) : (
-          <p style={{ color: "#888" }}>This user hasn't posted any listings yet.</p>
+          <p className="public-profile-empty">This user hasn't posted any listings yet.</p>
         )}
       </section>
 
-      <button onClick={() => navigate(-1)} style={backButtonStyle}>
+      <button onClick={() => navigate(-1)} className="public-profile-back">
         ← Back
       </button>
     </div>
   );
 }
-
-// --- STYLES ---
-const containerStyle = { padding: "40px", maxWidth: "1000px", margin: "0 auto", fontFamily: "sans-serif" };
-const sectionStyle = { marginBottom: "50px", paddingBottom: "30px", borderBottom: "1px solid #eee" };
-const detailItem = { marginBottom: "15px" };
-const labelStyle = { fontSize: "11px", fontWeight: "bold", color: "#666", marginBottom: "5px", display: "block", letterSpacing: "0.5px" };
-const infoBox = { padding: "12px", background: "#f9f9f9", border: "1px solid #ddd", borderRadius: "6px", color: "#333" };
-const avatarStyle = { width: "140px", height: "140px", borderRadius: "50%", objectFit: "cover", border: "3px solid #0984e3" };
-
-const gridStyle = { display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: "25px" };
-const listingCardStyle = { 
-  background: "white", 
-  border: "1px solid #eee", 
-  borderRadius: "10px", 
-  overflow: "hidden", 
-  cursor: "pointer", 
-  transition: "transform 0.2s, box-shadow 0.2s" 
-};
-const listingImgStyle = { width: "100%", height: "150px", objectFit: "cover" };
-const backButtonStyle = { marginTop: "40px", padding: "10px 20px", background: "#eee", border: "none", borderRadius: "6px", cursor: "pointer", fontWeight: "bold" };

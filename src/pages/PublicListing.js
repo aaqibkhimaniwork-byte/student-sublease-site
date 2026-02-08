@@ -1,6 +1,9 @@
 import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { supabase } from "../supabaseClient";
+import home from "../assets/House Icon.webp";
+import "../styles/SplashPage.css";
+import "../styles/PublicListing.css";
 
 export default function PublicListing() {
   const { id } = useParams();
@@ -94,107 +97,139 @@ export default function PublicListing() {
     }
   };
 
-  if (loading) return <div style={msgStyle}>Loading room details...</div>;
-  if (!listing) return <div style={msgStyle}>Property not found.</div>;
 
-  return (
-    <div style={containerStyle}>
-      <button onClick={() => navigate(-1)} style={backBtnStyle}>← Back to Search</button>
+  function renderHeader() {
+    return (
+      <header className="splash-header">
+        <div className="header-content">
+          <div className="title-wrap">
+            <Link to="/" className="logo-link">
+              <img src={home} alt="House Icon" className="title-icon" />
+              <h1 className="app-title">Easy Lease</h1>
+            </Link>
+          </div>
+          <nav className="main-nav" aria-label="primary">
+            <ul>
+              <li><Link to="/listings">Listings</Link></li>
+              <li><Link to="/create">Create a Listing</Link></li>
+              <li><Link to="/messages">Messages</Link></li>
+            </ul>
+          </nav>
+          <div className="auth-wrap">
+            {user ? (
+              <Link to="/myprofile" className="contact-button">
+                My Profile
+              </Link>
+            ) : (
+              <Link to="/login" className="contact-button">
+                Log In/ Sign up
+              </Link>
+            )}
+          </div>
+        </div>
+      </header>
+    );
+  }
 
-      <div style={galleryGrid}>
-        <div style={mainImgWrapper}>
-          <img src={listing.image_urls?.[0]} style={fullImg} alt="Main property" />
-          <button onClick={toggleSave} style={saveBtnOverlay}>
+  function renderShell(content) {
+    return (
+      <div className="splash-outer public-listing-screen">
+        <div className="splash-inner">
+          {renderHeader()}
+          <main className="splash-main">
+            <section className="public-listing-shell">
+              {content}
+            </section>
+          </main>
+        </div>
+      </div>
+    );
+  }
+
+  if (loading) {
+    return renderShell(
+      <div className="public-listing-status">Loading room details...</div>
+    );
+  }
+
+  if (!listing) {
+    return renderShell(
+      <div className="public-listing-status">Property not found.</div>
+    );
+  }
+
+  return renderShell(
+    <div className="public-listing-page">
+      <button onClick={() => navigate(-1)} className="public-listing-back">← Back to Search</button>
+
+      <div className="public-listing-gallery">
+        <div className="public-listing-main">
+          <img src={listing.image_urls?.[0]} className="public-listing-main-image" alt="Main property" />
+          <button onClick={toggleSave} className="public-listing-save">
             {isSaved ? "❤️ Saved" : "🤍 Save"}
           </button>
         </div>
-        <div style={sideImgWrapper}>
+        <div className="public-listing-side">
           {listing.image_urls?.length > 1 ? (
-            <img src={listing.image_urls[1]} style={sideImg} alt="view 2" />
+            <img src={listing.image_urls[1]} className="public-listing-side-image" alt="view 2" />
           ) : (
-            <div style={placeholderSide}>No additional photos</div>
+            <div className="public-listing-side-placeholder">No additional photos</div>
           )}
-          <div style={placeholderSide}>
-            <p style={{ margin: 0, fontSize: "14px" }}>{listing.sq_ft} sq ft</p>
-            <p style={{ margin: 0, fontSize: "12px", color: "#666" }}>Verified Listing</p>
+          <div className="public-listing-side-placeholder">
+            <p className="public-listing-side-stat">{listing.sq_ft} sq ft</p>
+            <p className="public-listing-side-sub">Verified Listing</p>
           </div>
         </div>
       </div>
 
-      <div style={contentLayout}>
-        <div style={{ flex: 2 }}>
-          <h1 style={titleStyle}>{listing.title}</h1>
-          <p style={addressStyle}>{listing.street_address}, {listing.city}, {listing.state} {listing.zip_code}</p>
+      <div className="public-listing-content">
+        <div className="public-listing-main-content">
+          <h1 className="public-listing-title">{listing.title}</h1>
+          <p className="public-listing-address">{listing.street_address}, {listing.city}, {listing.state} {listing.zip_code}</p>
           
-          <div style={tagRow}>
-            <div style={tag}>{listing.furnished ? "🛋️ Furnished" : "🪑 Unfurnished"}</div>
-            <div style={tag}>{listing.pets_allowed ? "🐾 Pets OK" : "🚫 No Pets"}</div>
-            <div style={tag}>{listing.parking_available ? "🚗 Parking Included" : "🚲 No Parking"}</div>
+          <div className="public-listing-tags">
+            <div className="public-listing-tag">{listing.furnished ? "🛋️ Furnished" : "🪑 Unfurnished"}</div>
+            <div className="public-listing-tag">{listing.pets_allowed ? "🐾 Pets OK" : "🚫 No Pets"}</div>
+            <div className="public-listing-tag">{listing.parking_available ? "🚗 Parking Included" : "🚲 No Parking"}</div>
           </div>
 
-          <div style={infoSection}>
+          <div className="public-listing-section">
             <h3>About this sublease</h3>
-            <p style={descriptionText}>{listing.description}</p>
+            <p className="public-listing-description">{listing.description}</p>
           </div>
 
-          <div style={infoSection}>
+          <div className="public-listing-section">
             <h3>Lease Details</h3>
             <p><strong>Universities:</strong> {listing.universities?.join(", ")}</p>
             <p><strong>Timeline:</strong> {listing.lease_start} to {listing.lease_end}</p>
           </div>
         </div>
 
-        <div style={sidebar}>
-          <div style={priceCard}>
-            <h2 style={{ color: "#0984e3", marginBottom: "15px" }}>${listing.rent}<span style={{ fontSize: "1rem", fontWeight: "normal", color: "#666" }}>/mo</span></h2>
+        <div className="public-listing-sidebar">
+          <div className="public-listing-price-card">
+            <h2 className="public-listing-price">${listing.rent}<span className="public-listing-price-unit">/mo</span></h2>
             {/* UPDATED BUTTON ROUTING */}
             <button 
               onClick={handleContactOwner}
-              style={contactBtn}
+              className="public-listing-contact"
             >
               Message {listing.profiles?.firstname}
             </button>
           </div>
 
-          <div style={posterCard} onClick={() => navigate(`/profile/${listing.user_id}`)}>
-            <p style={metaLabel}>LISTED BY</p>
-            <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-              <img src={listing.profiles?.profilepic_url} style={avatar} alt="poster" />
+          <div className="public-listing-poster" onClick={() => navigate(`/profile/${listing.user_id}`)}>
+            <p className="public-listing-meta">LISTED BY</p>
+            <div className="public-listing-poster-row">
+              <img src={listing.profiles?.profilepic_url} className="public-listing-avatar" alt="poster" />
               <div>
-                <p style={{ fontWeight: "bold", margin: 0 }}>{listing.profiles?.firstname} {listing.profiles?.lastname}</p>
-                <p style={{ fontSize: "12px", color: "#666", margin: 0 }}>{listing.profiles?.university}</p>
+                <p className="public-listing-poster-name">{listing.profiles?.firstname} {listing.profiles?.lastname}</p>
+                <p className="public-listing-poster-uni">{listing.profiles?.university}</p>
               </div>
             </div>
-            <p style={viewProfileHint}>View Profile →</p>
+            <p className="public-listing-view-profile">View Profile →</p>
           </div>
         </div>
       </div>
     </div>
   );
 }
-
-// --- STYLES ---
-const containerStyle = { padding: "40px", maxWidth: "1100px", margin: "0 auto", fontFamily: "sans-serif" };
-const msgStyle = { padding: "100px", textAlign: "center", fontSize: "1.2rem" };
-const backBtnStyle = { marginBottom: "20px", padding: "10px 15px", background: "#f8f9fa", border: "1px solid #ddd", borderRadius: "8px", cursor: "pointer", fontWeight: "bold" };
-const galleryGrid = { display: "grid", gridTemplateColumns: "2fr 1fr", gap: "12px", height: "450px", marginBottom: "30px" };
-const mainImgWrapper = { position: "relative", height: "100%" };
-const fullImg = { width: "100%", height: "100%", objectFit: "cover", borderRadius: "16px" };
-const saveBtnOverlay = { position: "absolute", top: "20px", right: "20px", padding: "12px 18px", background: "white", border: "none", borderRadius: "30px", fontWeight: "bold", cursor: "pointer", boxShadow: "0 4px 12px rgba(0,0,0,0.1)" };
-const sideImgWrapper = { display: "flex", flexDirection: "column", gap: "12px" };
-const sideImg = { width: "100%", height: "219px", objectFit: "cover", borderRadius: "16px" };
-const placeholderSide = { width: "100%", height: "219px", background: "#f0f0f0", borderRadius: "16px", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", color: "#888" };
-const contentLayout = { display: "flex", gap: "50px", flexWrap: "wrap" };
-const titleStyle = { fontSize: "2.4rem", margin: "0 0 10px 0", color: "#2d3436" };
-const addressStyle = { fontSize: "1.2rem", color: "#636e72", marginBottom: "30px" };
-const tagRow = { display: "flex", gap: "12px", marginBottom: "30px", flexWrap: "wrap" };
-const tag = { padding: "8px 16px", background: "#f0f7ff", color: "#0984e3", borderRadius: "25px", fontSize: "14px", fontWeight: "600" };
-const infoSection = { padding: "30px 0", borderTop: "1px solid #eee" };
-const descriptionText = { lineHeight: "1.8", color: "#444", fontSize: "1.05rem" };
-const sidebar = { flex: 1, minWidth: "320px" };
-const priceCard = { padding: "30px", border: "1px solid #eee", borderRadius: "20px", boxShadow: "0 10px 30px rgba(0,0,0,0.05)", position: "sticky", top: "20px" };
-const contactBtn = { width: "100%", padding: "16px", background: "#0984e3", color: "white", border: "none", borderRadius: "12px", fontWeight: "bold", fontSize: "1rem", cursor: "pointer", marginTop: "10px" };
-const posterCard = { marginTop: "24px", padding: "20px", background: "#f8f9fa", borderRadius: "20px", cursor: "pointer", border: "1px solid #eee" };
-const metaLabel = { fontSize: "11px", fontWeight: "bold", color: "#999", letterSpacing: "1px", marginBottom: "15px" };
-const avatar = { width: "55px", height: "55px", borderRadius: "50%", objectFit: "cover", border: "3px solid white" };
-const viewProfileHint = { fontSize: "13px", color: "#0984e3", fontWeight: "bold", marginTop: "15px", textAlign: "right" };

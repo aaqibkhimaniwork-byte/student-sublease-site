@@ -284,24 +284,44 @@ export default function Listings() {
                         </button>
                       </div>
 
-                    {/* Creator Profile Link */}
-                    <div 
-                      style={creatorBadgeStyle} 
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        navigate(`/MyProfile/${listing.user_id}`);
-                      }}
-                    >
-                      <img 
-                        src={creator?.profilepic_url || "https://via.placeholder.com/40"} 
-                        style={creatorImgStyle} 
-                        alt="Creator" 
-                      />
-                      <div>
-                        <span style={{ fontSize: "11px", color: "#888", display: "block" }}>POSTED BY</span>
-                        <span style={{ fontWeight: "bold", color: "#0984e3" }}>
-                          {creator?.firstname} {creator?.lastname}
-                        </span>
+                      <div style={{ padding: "20px", flex: 1, position: "relative" }}>
+                        <div style={{ display: "flex", justifyContent: "space-between" }}>
+                          <h3 style={{ margin: 0 }}>{listing.title}</h3>
+                          <h3 style={{ margin: 0, color: "#0984e3" }}>${listing.rent}/mo</h3>
+                        </div>
+                        <p style={{ color: "#666", margin: "10px 0" }}>{listing.city}, {listing.state} • {listing.sq_ft} sqft</p>
+                        {!isExpanded && <div style={expandHintStyle}><span style={{ fontSize: "0.8rem", color: "#0984e3", fontWeight: "bold" }}>Click to view details ▾</span></div>}
+
+                        {isExpanded && (
+                          <div style={detailsAreaStyle}>
+                            <div style={amenityGridStyle}>
+                              <div style={amenityItemStyle}>{listing.pets_allowed ? "✅" : "❌"} Pets</div>
+                              <div style={amenityItemStyle}>{listing.parking_available ? "✅" : "❌"} Parking</div>
+                              <div style={amenityItemStyle}>{listing.furnished ? "✅" : "❌"} Furnished</div>
+                            </div>
+
+                            <div style={creatorBadgeStyle} onClick={(e) => { e.stopPropagation(); navigate(`/profile/${listing.user_id}`); }}>
+                              <img src={creator?.profilepic_url || "https://via.placeholder.com/40"} style={creatorImgStyle} alt="Creator" />
+                              <div>
+                                <span style={{ fontSize: "11px", color: "#888", display: "block" }}>POSTED BY</span>
+                                <span style={{ fontWeight: "bold", color: "#0984e3" }}>{creator?.firstname} {creator?.lastname}</span>
+                              </div>
+                            </div>
+
+                            <p><strong>Available Universities:</strong> {listing.universities.join(", ")}</p>
+                            <p><strong>Lease Period:</strong> {listing.lease_start} to {listing.lease_end}</p>
+                            <p><strong>Address:</strong> {listing.street_address}, {listing.zip_code}</p>
+                            <div style={{ margin: "15px 0" }}>
+                              <strong>Description:</strong>
+                              <p style={{ lineHeight: "1.6", color: "#444" }}>{listing.description}</p>
+                            </div>
+                            <div style={{ display: "flex", gap: "10px", overflowX: "auto", paddingBottom: "10px" }}>
+                              {listing.image_urls?.map((url, i) => (
+                                <img key={i} src={url} style={{ height: "100px", borderRadius: "8px", border: "1px solid #eee" }} alt="gallery" />
+                              ))}
+                            </div>
+                          </div>
+                        )}
                       </div>
                     </div>
                   );
